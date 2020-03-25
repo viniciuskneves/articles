@@ -51,3 +51,128 @@ That is all we need to do to grab the data that we need, now we need to parse it
 
 ### Parsing page source
 
+The parsing step should be simple. Given an HTML document as input I want to extract some structured information out of it. My first idea is: take the article title and the article link. So every tweet will contain the title and the link to the original article. It is similar to what [@Berlin_de_News](https://twitter.com/Berlin_de_News) does.
+
+![Berlin DE News tweet example](https://i.imgur.com/b1qU1Jd.png)
+
+To parse the HTML, I've choosen [cheerio](https://cheerio.js.org) which allows you to "jQuery" the input. This way I can navigate and select parts of the HTML document that I want to extract the data from.
+
+The parsing code looks like the one below:
+
+```javacript
+const cheerio = require('cheerio');
+
+async function parseArticles(html) { // HTML is `response.data` from `fetchArticles`
+  const $ = cheerio.load(html);
+  // `.special` might include some "random" articles
+  const articles = $('#hnews').parent().find('article').not('.special').map(function() {
+    const heading = $(this).find('.heading');
+    return {
+      title: heading.text(),
+      link: `${BASE_URL}${heading.find('a').attr('href')}`,
+    };
+  }).toArray();
+
+  console.log('Fetched articles: ', articles);
+
+  return articles;
+}
+```
+
+I navigate through all the `<articles>` from an specific part of the page and `.map` them. There are some specific things like `#hnews`, `.parent()` and `.not()` that are rules I followed to find the articles section. This is a sensitive part but it does the job for now.
+
+The result is the following structre:
+
+```javascript
+[
+  {
+    title: 'Article title',
+    link: 'https://www.berlin.de/path/to/article/title'
+  },
+  {
+    title: 'Article title 2',
+    link: 'https://www.berlin.de/path/to/article/title-2'
+  }
+]
+```
+
+This concludes our crawler: it fetches the page and parses so we have a more structure data to work.
+
+Next step is to tweet the extracted articles.
+
+## Tweeting
+
+First step was to create a Twitter account/app. Thankfully the handler `@Berlin_en_News` was not yet taken and it would be perfect for this case as the German version (official) is called `@Berlin_de_News`.
+
+Now I've all the necessary keys to use the [Twitter API](https://developer.twitter.com/en/docs/basics/getting-started) and I just need to start tweeting.
+
+I ended up using a library called [twitter](https://github.com/desmondmorris/node-twitter) to do so. It is not necessary to use a library as Twitter API seems really friendly but my goal was not to optimize or so in the beginning, I wanted to make it work first =]
+
+This is the code needed to get the library ready to use:
+
+```javascript
+const Twitter = require('twitter');
+const client = new Twitter({
+  consumer_key: process.env.TWITTER_API_KEY,
+  consumer_secret: process.env.TWITTER_API_SECRET_KEY,
+  access_token_key: process.env.TWITTER_ACCESS_TOKEN,
+  access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
+});
+```
+
+To tweet we need to use the following API: [POST statuses/update](https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update). It has a lot of different parameters. At the beginning I'm ignoring most of them. I'm just using the `place_id` so it shows that the tweet is from Berlin.
+
+ADD IMAGE
+
+The following code walks through the process of tweeting:
+
+```javascript
+const placeId = '3078869807f9dd36'; // Berlin's place ID
+
+async function postTweet(status) {
+  const response = await client.post('statuses/update', { // `client` was instantiated above
+    status, // Tweet content
+    place_id: placeId,
+  });
+
+  return response;
+}
+
+for (const article of newArticles) { // `newArticles` come from the crawler
+  const response = await postTweet([
+    article.title,
+    `Read more: ${article.link}`,
+  ].join('\n'));
+
+  console.log('Tweet response: ', response);
+}
+```
+
+The BOT is almost ready. It misses on important aspect: it shouldn't tweet the same article again. So far it doesn't know which articles it already tweeted.
+
+### Filtering new articles
+
+This process denifitely needs to be improved but it does the job for now =]
+
+I fetch the BOT timeline and compare it with the articles' titles. The only tricky thing is that Twitter won't exactly use the article URL in the tweet itself, so some dirty "magic" had to be written for now. As I said, it does the job for now =]
+
+```javascript
+async function homeTimeline() {
+  const response = await client.get('statuses/user_timeline', {});
+  const responseTitles = response.map((tweet) => tweet.text.split('\n')[0]);
+
+  console.log('Last tweets titles: ', responseTitles);
+
+  return responseTitles;
+}
+
+const [articles, tweets] = await Promise.all([fetchArticles(), homeTimeline()]);
+const newArticles = articles.filter(article => !tweets.includes(article.title));
+```
+
+With that in place I'm "sure" that it will tweet only the new articles.
+
+Now the BOT itself is done. There is one major issue: I need to run it on my machine. The next step is to deploy it so it runs automatically =]
+
+## Deployment
+
