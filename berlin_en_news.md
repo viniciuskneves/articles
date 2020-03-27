@@ -1,23 +1,24 @@
 # Creating a Twitter BOT for Berlin English speakers
 
+UPDATE IMAGE: BERLIN BOT PROFILE PICTURE
 ![Berlin panoramic](https://pbs.twimg.com/profile_banners/18760371/1494923251/1500x500)
 
-I'm going to walk you through the process of creating [@Berlin_en_News](https://twitter.com/Berlin_en_News), a Twitter BOT that tweets news in English for non-German speakers.
+I'm going to walk you through the process of creating [@Berlin_en_News](https://twitter.com/Berlin_en_News), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
 The [project](https://github.com/viniciuskneves/berlin_en_news) was developed using Javscript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
 
 ## Motivation
 
-I'm working from home since mid-March due the Corona outbreak. On the first week I've been constantly reading the news about it but I live in Berlin and I don't speak proper German.
-Berlin provides has its official [English News channel](https://www.berlin.de/en/news/) which I think is super cool. It also has its official Twitter account [@Berlin_de_News](https://twitter.com/Berlin_de_News) which tweets their news in German.
+I'm working from home since mid-March due the Corona outbreak. On the first days I had been constantly reading the news about it but there is a problem: I live in Berlin and I don't speak proper German.
+Berlin has its official [English News channel](https://www.berlin.de/en/news/) which I think is super cool. It also has its official Twitter account [@Berlin_de_News](https://twitter.com/Berlin_de_News) which tweets their news in German.
 The issue here is that they don't offer an English option. The Twitter account tweets only the German's news so if you want to have the "latest" English news you would have to open their website.
 That was my main motivation to create [@Berlin_en_News])https://twitter.com/Berlin_en_News), a bot that would tweet Berlin's News in English. The idea is that you can get notified everytime that there is an update.
 
 ---
 
-Enough of introduction and motivation. From now on I'm going to dive into how it was implemented and I would love to have your feedback. I hope the project keeps improving over time, I can see a lot of room for improvements, from tech to new ideas!
+Enough of introduction and motivation. From now on I'm going to dive into how it was implemented and I would love to have your feedback. I hope the project evolves over time, I can see a lot of room for improvements, from tech to new ideas!
 
 The project consists in 2 basic structures: Crawler and Twitter API =]
-I'm going to also talk about the deployment, using AWS SAM in this case, and at the end I do also invite you to contribute (not just tech-wise) and share it =]
+I'm going to also talk about the deployment, using AWS SAM in this case, and at the end I invite you to contribute (not just tech-wise) and share it =]
 
 ## Crawler
 
@@ -51,7 +52,7 @@ That is all we need to do to grab the data that we need, now we need to parse it
 
 ### Parsing page source
 
-The parsing step should be simple. Given an HTML document as input I want to extract some structured information out of it. My first idea is: take the article title and the article link. So every tweet will contain the title and the link to the original article. It is similar to what [@Berlin_de_News](https://twitter.com/Berlin_de_News) does.
+The parsing step should be simple. Given an HTML document as input I want to extract some structured information out of it. My first idea is: take the article title and the article link. So every tweet will contain the title and the link to the original article. It is similar to what [@Berlin_de_News](https://twitter.com/Berlin_de_News) does:
 
 ![Berlin DE News tweet example](https://i.imgur.com/b1qU1Jd.png)
 
@@ -79,7 +80,7 @@ async function parseArticles(html) { // HTML is `response.data` from `fetchArtic
 }
 ```
 
-I navigate through all the `<articles>` from an specific part of the page and `.map` them. There are some specific things like `#hnews`, `.parent()` and `.not()` that are rules I followed to find the articles section. This is a sensitive part but it does the job for now.
+I navigate through all the `<articles>` from an specific part of the page and `.map` them. There are some specific things like `#hnews`, `.parent()` and `.not()` that are rules I followed to find the articles section. This is a sensitive part but it does the job for now. The same result could be achieved using other selectors as well.
 
 The result is the following structre:
 
@@ -108,7 +109,7 @@ Now I've all the necessary keys to use the [Twitter API](https://developer.twitt
 
 I ended up using a library called [twitter](https://github.com/desmondmorris/node-twitter) to do so. It is not necessary to use a library as Twitter API seems really friendly but my goal was not to optimize or so in the beginning, I wanted to make it work first =]
 
-This is the code needed to get the library ready to use:
+This is the code needed to get the library ready to use (all Twitter keys are environment varibles):
 
 ```javascript
 const Twitter = require('twitter');
@@ -122,7 +123,7 @@ const client = new Twitter({
 
 To tweet we need to use the following API: [POST statuses/update](https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update). It has a lot of different parameters. At the beginning I'm ignoring most of them. I'm just using the `place_id` so it shows that the tweet is from Berlin.
 
-ADD IMAGE
+ADD IMAGE: IMAGE THAT SHOW A TWEET FROM BERLIN --> BERLIN_EN_NEWS
 
 The following code walks through the process of tweeting:
 
@@ -152,14 +153,14 @@ The BOT is almost ready. It misses on important aspect: it shouldn't tweet the s
 
 ### Filtering new articles
 
-This process denifitely needs to be improved but it does the job for now =]
+This process denifitely needs to be improved but it does the job for now (again) =]
 
-I fetch the BOT timeline and compare it with the articles' titles. The only tricky thing is that Twitter won't exactly use the article URL in the tweet itself, so some dirty "magic" had to be written for now. As I said, it does the job for now =]
+I fetch the BOT's timeline and compare it with the articles' titles. The only tricky thing is that Twitter won't exactly use the article URL in the tweet itself, so some dirty "magic" had to be written for now. As I said, it does the job for now =]
 
 ```javascript
 async function homeTimeline() {
   const response = await client.get('statuses/user_timeline', {});
-  const responseTitles = response.map((tweet) => tweet.text.split('\n')[0]);
+  const responseTitles = response.map((tweet) => tweet.text.split('\n')[0]); // Dirty "magic" 🙈
 
   console.log('Last tweets titles: ', responseTitles);
 
@@ -176,17 +177,17 @@ Now the BOT itself is done. There is one major issue: I need to run it on my mac
 
 ## Deployment
 
-I chose to deploy it to Lambda by convenience as I'm more familiar to it and this BOT won't run all day long, it will run every 30min at the moment which means that it would be a good use case for Lambda. On top of that I'm also using a CloudWatch Scheduler to run the function every 30min.
+I chose to deploy it to Lambda by convenience as I'm more familiar to it and this BOT won't run all day long. It will run every 30min (using a CloudWatch scheduler) at the moment which means that it would be a good use case for Lambda.
 
 Everything was deployed using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) as I wanted to try the tool in a real project. It gives you a lot of flexibility but also some challenges if you compare it to [Serverless Framework](https://serverless.com) for example.
 
 You can check the PR where I added the deployment here: https://github.com/viniciuskneves/berlin_en_news/pull/4
 
-The configuration file `template.yaml` is divided into 3 important blocks that I'm going to explore: Resources, Globals and Parameters.
+The configuration file `template.yaml` (which is used by SAM) is divided into 3 important blocks that I'm going to explore: Resources, Globals and Parameters.
 
 ### Resources
 
-In my case I'm using a Lambda Function and a CloudWatch Scheduler as AWS resources. The CloudWatch Scheduler is automatically created for us once we define it as an event for your function. The trickiest part here is to know how to define a schedule, which you would have to go through the docs if you want to understand it a bit better: https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
+In my case I'm using a Lambda Function and a CloudWatch scheduler as resources. The CloudWatch scheduler is automatically created for us once we define it as an event source for our function. The trickiest part here is to know how to define a schedule, which you would have to go through the docs if you want to understand it a bit better: https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html
 
 ```yaml
 Resources:
@@ -207,7 +208,7 @@ Resources:
 
 Those are global settings applied to our resources. I could have defined them inside each resource for example but it doesn't make sense for the project so far.
 
-I'm setting my runtime, which is Node.js for this project. A timeout for Lambda and also my environment variables which are used by my function (Twitter keys).
+I'm setting my runtime, which is Node.js for this project, a timeout for Lambda and also my environment variables which are used by my function (Twitter keys).
 
 ```yaml
 Globals:
@@ -262,8 +263,8 @@ It has been a fun process, some learnings as Twitter account blocked by mistake,
 
 I would appreciate if you could share the project so it would help other people as well, especially in Berlin =]
 I would also appreciate if you want to contribute to the project:
-- New ideas: add images to tweets, add comments... Anything that could be done on Twitter level to enhance the experience
-- Project maintenance: I've setup some [issues on GitHub](https://github.com/viniciuskneves/berlin_en_news/issues) and you're more than welcome to give it a try
+- New ideas: add images to tweets, add comments... Anything that could be done on Twitter level to enhance the experience.
+- Project maintenance: I've setup some [issues on GitHub](https://github.com/viniciuskneves/berlin_en_news/issues) and you're more than welcome to give it a try.
 - New sources: do you have any other sources that are worth adding? Let me know and we can work on it.
 - New city/topic: would you like to have it in your city as well? For a specific topic? Let's make it happen =]
 
