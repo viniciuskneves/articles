@@ -4,7 +4,7 @@ UPDATE IMAGE: BERLIN BOT PROFILE PICTURE
 ![Berlin panoramic](https://pbs.twimg.com/profile_banners/18760371/1494923251/1500x500)
 
 I'm going to walk you through the process of creating [@Berlin_en_News](https://twitter.com/Berlin_en_News), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
-The [project](https://github.com/viniciuskneves/berlin_en_news) was developed using Javscript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
+The [project](https://github.com/viniciuskneves/berlin_en_news) was developed using Javascript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
 
 ## Motivation
 
