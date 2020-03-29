@@ -60,7 +60,7 @@ To parse the HTML, I've choosen [cheerio](https://cheerio.js.org) which allows y
 
 The parsing code looks like the one below:
 
-```javacript
+```javascript
 const cheerio = require('cheerio');
 
 async function parseArticles(html) { // HTML is `response.data` from `fetchArticles`
