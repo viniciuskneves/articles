@@ -82,7 +82,7 @@ async function parseArticles(html) { // HTML is `response.data` from `fetchArtic
 
 I navigate through all the `<article>` from an specific part of the page and `.map` them. There are some specific things like `#hnews`, `.parent()` and `.not()` that are rules I followed to find the articles section. This is a sensitive part but it does the job for now. The same result could be achieved using other selectors as well.
 
-The result is the following structre:
+The result is the following structure:
 
 ```javascript
 [
