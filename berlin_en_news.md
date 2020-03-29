@@ -11,7 +11,7 @@ The [project](https://github.com/viniciuskneves/berlin_en_news) was developed us
 I'm working from home since mid-March due the Corona outbreak. On the first days I had been constantly reading the news about it but there is a problem: I live in Berlin and I don't speak proper German.
 Berlin has its official [English News channel](https://www.berlin.de/en/news/) which I think is super cool. It also has its official Twitter account [@Berlin_de_News](https://twitter.com/Berlin_de_News) which tweets their news in German.
 The issue here is that they don't offer an English option. The Twitter account tweets only the German's news so if you want to have the "latest" English news you would have to open their website.
-That was my main motivation to create [@Berlin_en_News](https://twitter.com/Berlin_en_News), a bot that would tweet Berlin's News in English. The idea is that you can get notified everytime that there is an update.
+That was my main motivation to create [@Berlin_en_News](https://twitter.com/Berlin_en_News), a bot that would tweet Berlin's News in English. The idea is that you can get notified every time that there is an update.
 
 ---
 
