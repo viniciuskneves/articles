@@ -1,6 +1,6 @@
 ---
 title: Creating a Twitter BOT for Berlin English speakers
-published: false
+published: true
 description: I'm going to walk you through the process of creating @Berlinglish, a Twitter BOT that tweets Berlin's news in English for non-German speakers.
 tags: javascript, node, lambda, bot
 cover_image: https://pbs.twimg.com/profile_banners/18760371/1494923251/1500x500
