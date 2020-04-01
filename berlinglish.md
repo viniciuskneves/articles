@@ -1,17 +1,16 @@
 # Creating a Twitter BOT for Berlin English speakers
 
-UPDATE IMAGE: BERLIN BOT PROFILE PICTURE
-![Berlin panoramic](https://pbs.twimg.com/profile_banners/18760371/1494923251/1500x500)
+![Berlinglish first Tweet](https://i.imgur.com/ZAepOlg.png)
 
-I'm going to walk you through the process of creating [@Berlin_en_News](https://twitter.com/Berlin_en_News), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
-The [project](https://github.com/viniciuskneves/berlin_en_news) was developed using Javascript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
+I'm going to walk you through the process of creating [@Berlinglish](https://twitter.com/Berlinglish), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
+The [project](https://github.com/viniciuskneves/berlinglish) was developed using Javascript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
 
 ## Motivation
 
 I'm working from home since mid-March due the Corona outbreak. On the first days I had been constantly reading the news about it but there is a problem: I live in Berlin and I don't speak proper German.
 Berlin has its official [English News channel](https://www.berlin.de/en/news/) which I think is super cool. It also has its official Twitter account [@Berlin_de_News](https://twitter.com/Berlin_de_News) which tweets their news in German.
 The issue here is that they don't offer an English option. The Twitter account tweets only the German's news so if you want to have the "latest" English news you would have to open their website.
-That was my main motivation to create [@Berlin_en_News](https://twitter.com/Berlin_en_News), a bot that would tweet Berlin's News in English. The idea is that you can get notified every time that there is an update.
+That was my main motivation to create [@Berlinglish](https://twitter.com/Berlinglish), a bot that would tweet Berlin's News in English. The idea is that you can get notified every time that there is an update.
 
 ---
 
@@ -103,7 +102,11 @@ Next step is to tweet the extracted articles.
 
 ## Tweeting
 
-First step was to create a Twitter account/app. Thankfully the handler `@Berlin_en_News` was not yet taken and it would be perfect for this case as the German version (official) is called `@Berlin_de_News`.
+First step was to create a Twitter account/app.
+
+~~Thankfully the handler `@Berlin_en_News` was not yet taken and it would be perfect for this case as the German version (official) is called `@Berlin_de_News`.~~
+
+The paragraph above is outdated. Once I started writing the article I created `@Berlin_en_News` which was perfect but it got locked due a mistake of mine. After more than a week without getting unlocked I gave up and created a new account. That is when `@Berlinglish` was born. It is basically Berlin + English =]
 
 Now I've all the necessary keys to use the [Twitter API](https://developer.twitter.com/en/docs/basics/getting-started) and I just need to start tweeting.
 
@@ -123,7 +126,7 @@ const client = new Twitter({
 
 To tweet we need to use the following API: [POST statuses/update](https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update). It has a lot of different parameters. At the beginning I'm ignoring most of them. I'm just using the `place_id` so it shows that the tweet is from Berlin.
 
-ADD IMAGE: IMAGE THAT SHOW A TWEET FROM BERLIN --> BERLIN_EN_NEWS
+![Example's Tweet](https://i.imgur.com/cl0j9Hz.png)
 
 The following code walks through the process of tweeting:
 
@@ -181,7 +184,7 @@ I chose to deploy it to Lambda by convenience as I'm more familiar to it and thi
 
 Everything was deployed using [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) as I wanted to try the tool in a real project. It gives you a lot of flexibility but also some challenges if you compare it to [Serverless Framework](https://serverless.com) for example.
 
-You can check the PR where I added the deployment here: https://github.com/viniciuskneves/berlin_en_news/pull/4
+You can check the PR where I added the deployment here: https://github.com/viniciuskneves/berlinglish/pull/4
 
 The configuration file `template.yaml` (which is used by SAM) is divided into 3 important blocks that I'm going to explore: Resources, Globals and Parameters.
 
@@ -264,7 +267,7 @@ It has been a fun process, some learnings as Twitter account blocked by mistake,
 I would appreciate if you could share the project so it would help other people as well, especially in Berlin =]
 I would also appreciate if you want to contribute to the project:
 - New ideas: add images to tweets, add comments... Anything that could be done on Twitter level to enhance the experience.
-- Project maintenance: I've setup some [issues on GitHub](https://github.com/viniciuskneves/berlin_en_news/issues) and you're more than welcome to give it a try.
+- Project maintenance: I've setup some [issues on GitHub](https://github.com/viniciuskneves/berlinglish/issues) and you're more than welcome to give it a try.
 - New sources: do you have any other sources that are worth adding? Let me know and we can work on it.
 - New city/topic: would you like to have it in your city as well? For a specific topic? Let's make it happen =]
 
