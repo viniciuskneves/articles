@@ -3,15 +3,15 @@ title: Creating a Twitter BOT for Berlin English speakers
 published: false
 description: I'm going to walk you through the process of creating @Berlinglish, a Twitter BOT that tweets Berlin's news in English for non-German speakers.
 tags: javascript, node, lambda, bot
-cover_image: https://i.imgur.com/ZAepOlg.png
+cover_image: https://pbs.twimg.com/profile_banners/18760371/1494923251/1500x500
 ---
 
 # Creating a Twitter BOT for Berlin English speakers
 
-![Berlinglish first Tweet](https://i.imgur.com/ZAepOlg.png)
-
 I'm going to walk you through the process of creating [@Berlinglish](https://twitter.com/Berlinglish), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
 The [project](https://github.com/viniciuskneves/berlinglish) was developed using Javascript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
+
+![Berlinglish first Tweet](https://i.imgur.com/ZAepOlg.png)
 
 ## Motivation
 
