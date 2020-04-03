@@ -11,7 +11,7 @@ cover_image: https://pbs.twimg.com/profile_banners/18760371/1494923251/1500x500
 I'm going to walk you through the process of creating [@Berlinglish](https://twitter.com/Berlinglish), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
 The [project](https://github.com/viniciuskneves/berlinglish) was developed using Javascript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
 
-![Berlinglish first Tweet](https://i.imgur.com/ZAepOlg.png)
+{% twitter 1245074868107960321 %}
 
 ## Motivation
 
@@ -61,7 +61,7 @@ That is all we need to do to grab the data that we need, now we need to parse it
 
 The parsing step should be simple. Given an HTML document as input I want to extract some structured information out of it. My first idea is: take the article title and the article link. So every tweet will contain the title and the link to the original article. It is similar to what [@Berlin_de_News](https://twitter.com/Berlin_de_News) does:
 
-![Berlin DE News tweet example](https://i.imgur.com/b1qU1Jd.png)
+{% twitter 1244663060792356864 %}
 
 To parse the HTML, I've choosen [cheerio](https://cheerio.js.org) which allows you to "jQuery" the input. This way I can navigate and select parts of the HTML document that I want to extract the data from.
 
