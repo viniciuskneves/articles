@@ -214,3 +214,4 @@ The example below shows how it can be implemented:
 
 The final result is shown below and you can also check the sample code here: INSERT REPO LINK
 
+![Final example](https://i.ibb.co/qxPjWk0/vue-dose.gif)
