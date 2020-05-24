@@ -216,6 +216,6 @@ The example below shows how it can be implemented:
 - A wrapper can be created to extract the error logic
 - `Suspense` plays nicely with Vue Router once we want to show a loading screen
 
-The final result is shown below and you can also check the sample code here: https://github.com/viniciuskneves/vue-3-suspense
+The final result is shown below and you can also check the sample code here: [vue-3-suspense](https://github.com/viniciuskneves/vue-3-suspense).
 
 ![Final example](https://i.ibb.co/qxPjWk0/vue-dose.gif)
