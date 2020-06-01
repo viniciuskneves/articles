@@ -1,10 +1,8 @@
-# Suspense: feeling of excited about what may happen
-
-Well, the title came from Google but I think you can guess what I'm going to talk about =]
+# Go async in Vue 3 with Suspense
 
 Vue 3 is coming with a some exciting new features. Composition API is the hottest one at the moment but there are others that excite me as much as it.
 
-One of those new features is called `Suspense` and it really excites me about the benefits it brings. You might have heard about it already but I will try to show some examples of usage of `Suspense` and where it can be beneficial.
+One of those new features is called `Suspense` and it really excites me about the benefits it brings. You might have heard about it already but I will try to show some examples of the usage of `Suspense` and where it can be beneficial.
 
 ## What is Suspense?
 
