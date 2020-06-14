@@ -216,4 +216,4 @@ The example below shows how it can be implemented:
 
 The final result is shown below and you can also check the sample code here: [vue-3-suspense](https://github.com/viniciuskneves/vue-3-suspense).
 
-![Final example](https://i.ibb.co/qxPjWk0/vue-dose.gif)
+![Final example](https://i.ibb.co/8dNYkC5/super-high-resolution.gif)
