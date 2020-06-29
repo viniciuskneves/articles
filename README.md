@@ -12,6 +12,7 @@ This is a list of the articles I've published in the following platforms (not al
 - [Go async in Vue 3 with Suspense](./go-async-in-vue-3-with-suspense.md)
   - [VueDose](https://vuedose.tips/go-async-in-vue-3-with-suspense)
   - [DEV](https://dev.to/viniciuskneves/go-async-in-vue-3-with-suspense-4860)
+  - [Medium](https://medium.com/@viniciuskneves/go-async-in-vue-3-with-suspense-a33bc0469be8)
 
 > I'm going to walk you through the process of creating [@Berlinglish](https://twitter.com/Berlinglish), a Twitter BOT that tweets Berlin's news in English for non-German speakers.
 The [project](https://github.com/viniciuskneves/berlinglish) was developed using Javascript. It is an AWS Lambda function that has an AWS CloudWatch scheduler as trigger. The function crawls Berlin's latest news and tweets it =]
