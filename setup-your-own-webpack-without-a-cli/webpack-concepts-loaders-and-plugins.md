@@ -1,4 +1,4 @@
-# Setup your own Webpack without a CLI
+# Webpack concepts: Loaders and Plugins
 
 *This is the first time I write a series of articles. I decided to structure it like that as I don't have the full picture of what I'm going to be writing, I've just the first part of it written, and I also want to avoid a 10min reading article at the end.*
 
