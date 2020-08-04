@@ -27,3 +27,4 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
   - [Webpack concepts: Loaders and Plugins](https://github.com/viniciuskneves/articles/blob/master/setup-your-own-webpack-without-a-cli/webpack-concepts-loaders-and-plugins.md)
     - [DEV](https://dev.to/viniciuskneves/webpack-concepts-loaders-and-plugins-5ed0)
     - [Medium](https://medium.com/@viniciuskneves/webpack-concepts-loaders-and-plugins-26c6ddb959c2)
+    - [LinkedIn](https://www.linkedin.com/pulse/webpack-concepts-loaders-plugins-vinicius-kiatkoski-neves/)
