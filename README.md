@@ -26,3 +26,4 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
 - [Setup your own Webpack without a CLI](https://github.com/viniciuskneves/articles/tree/master/setup-your-own-webpack-without-a-cli)
   - [Webpack concepts: Loaders and Plugins](https://github.com/viniciuskneves/articles/blob/master/setup-your-own-webpack-without-a-cli/webpack-concepts-loaders-and-plugins.md)
     - [DEV](https://dev.to/viniciuskneves/webpack-concepts-loaders-and-plugins-5ed0)
+    - [Medium](https://medium.com/@viniciuskneves/webpack-concepts-loaders-and-plugins-26c6ddb959c2)
