@@ -167,7 +167,7 @@ So you can use it like this:
     <template #error>
       <h1>I failed to load</h1>
     </template>
-  </Suspense>
+  </SuspenseWithError>
 </template>
 
 <script>
