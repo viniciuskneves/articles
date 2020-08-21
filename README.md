@@ -31,3 +31,4 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
 
 > How about building different versions of our applications targeting different browsers so each browser downloads only the "fallbacks" it needs? That is in short what I thought. Now I'm going to explore how is our current development lifecycle and where we can try to add this idea.
 - [Multiple builds targeting different browsers](./multiple-builds-targeting-different-browsers/README.md)
+  - [Medium](https://medium.com/homeday/multiple-builds-targeting-different-browsers-bacb7bfc7e1a)
