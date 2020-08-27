@@ -33,3 +33,4 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
 - [Multiple builds targeting different browsers](./multiple-builds-targeting-different-browsers/README.md)
   - [Medium](https://medium.com/homeday/multiple-builds-targeting-different-browsers-bacb7bfc7e1a)
   - [DEV](https://dev.to/viniciuskneves/multiple-builds-targeting-different-browsers-jcl)
+  - [LinkedIn](https://www.linkedin.com/pulse/multiple-builds-targeting-different-browsers-vinicius-kiatkoski-neves/)
