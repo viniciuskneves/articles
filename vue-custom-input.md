@@ -41,7 +41,7 @@ We will have an input that has `Initial value` as the initial value and the user
 
 The problem with the above component is that we can't reuse it. Imagine we have a page where we need the username and the e-mail, the above component won't handle the e-mail case and all the data is inside the component itself, not somewhere else (like the parent component, for example). That is where custom input components shine and also one of its challenges: keep the `v-model` behavior consistent.
 
-## Wrong custom input component
+## The wrong custom input component
 
 Well, why am I showing this example? The answer is: this is the first approach most of us will try.
 
