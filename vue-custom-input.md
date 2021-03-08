@@ -41,7 +41,7 @@ We'll have an input that has `Initial value` as the initial value and the userna
 
 The problem with the above component is that we can't reuse it. Imagine we've a page where we need the username and the e-mail, the above component won't handle the e-mail case as the data is inside the component itself, not somewhere else (like the parent component, for example). That is where custom input components shine and also one of its challenges: keep the `v-model` behavior consistent.
 
-## Wrong custom input component
+## The wrong custom input component
 
 Well, why am I showing this example? The answer is: this is the first approach most of us will try.
 
@@ -127,7 +127,7 @@ The main difference is using `:value` instead of `v-model`. In this case, we're 
 
 The next step is to rework the example above and make sure it works as expected.
 
-## Happy custom input component
+## The happy custom input component
 
 The happy custom input component doesn't mutate its prop but emits the changes to the parent component.
 
