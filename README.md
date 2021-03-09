@@ -34,3 +34,6 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
   - [Medium](https://medium.com/homeday/multiple-builds-targeting-different-browsers-bacb7bfc7e1a)
   - [DEV](https://dev.to/viniciuskneves/multiple-builds-targeting-different-browsers-jcl)
   - [LinkedIn](https://www.linkedin.com/pulse/multiple-builds-targeting-different-browsers-vinicius-kiatkoski-neves/)
+
+> Building custom input components with Vue might sound simple but it has its gotchas and from time to time we end up going through the documentation to check some details. It can also get a bit complicated if we are not familiar with few Vue concepts.
+- [Vue custom input](./vue-custom-input.md)
