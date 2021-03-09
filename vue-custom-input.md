@@ -395,3 +395,5 @@ export default {
 }
 </script>
 ```
+
+*Thanks [@danilowoz](https://github.com/danilowoz) for reviewing it*
