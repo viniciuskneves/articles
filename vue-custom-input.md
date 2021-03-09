@@ -8,6 +8,20 @@ Last month, February 2021, it happened again. When possible I try to help people
 
 To consolidate this knowledge for myself, and use it as some sort of documentation for others, I decided to wrap up the process of writing a custom input.
 
+---
+
+**Summary**
+
+- [v-model and `<input>`](#v-model-and-input)
+- [The wrong custom input component](#the-wrong-custom-input-component)
+- [The happy custom input component](#the-happy-custom-input-component)
+  - [Adding validation (or operation on data change)](#adding-validation-or-operation-on-data-change)
+  - [Combining computed and `v-model`](#combining-computed-and-v-model)
+- [Extra: the `model` property](#extra-the-model-property)
+- [So what?](#so-what)
+
+---
+
 ## v-model and `<input>`
 
 Once we start building forms with Vue we learn the directive `v-model`. It does a lot of the hard work for us: it binds a value to an input. It means that whenever we change the input's value the variable will also be updated.
