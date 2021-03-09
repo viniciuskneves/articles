@@ -10,7 +10,7 @@ To consolidate this knowledge for myself, and use it as some sort of documentati
 
 ---
 
-**Summary**
+**Table of contents**
 
 - [v-model and `<input>`](#v-model-and-input)
 - [The wrong custom input component](#the-wrong-custom-input-component)
