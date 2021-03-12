@@ -37,3 +37,4 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
 
 > Building custom input components with Vue might sound simple but it has its gotchas and from time to time we end up going through the documentation to check some details. It can also get a bit complicated if we are not familiar with few Vue concepts.
 - [Vue custom input](./vue-custom-input.md)
+  - [DEV](https://dev.to/viniciuskneves/vue-custom-input-bk8)
