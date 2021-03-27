@@ -40,3 +40,4 @@ The [project](https://github.com/viniciuskneves/berlinglish) was developed using
   - [DEV](https://dev.to/viniciuskneves/vue-custom-input-bk8)
   - [Medium](https://viniciuskneves.medium.com/vue-custom-input-501c48788a2f)
   - [LinkedIn](https://www.linkedin.com/pulse/vue-custom-input-vinicius-kiatkoski-neves)
+  - [BrazilJS (PT-BR)](https://www.braziljs.org/p/d6da716b-8e83-4dc0-af1b-b79006b5808a)
