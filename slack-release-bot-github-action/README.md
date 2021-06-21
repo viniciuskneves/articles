@@ -68,9 +68,9 @@ on:
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Get latest commit info
-	      run: |
-	        echo "::set-output name=TITLE::$(git show -1 --format='%s' -s)"
-	      id: latest_commit
+        run: |
+          echo "::set-output name=TITLE::$(git show -1 --format='%s' -s)"
+        id: latest_commit
       - name: Announce on Slack 📢
         run: |
           curl ${{ secrets.SLACK_RELEASE_BOT_WEBHOOK_URL }} \
