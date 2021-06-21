@@ -68,26 +68,26 @@ on:
     steps:
       - uses: actions/checkout@v2.3.4
       - name: Get latest commit info
-	run: |
-	  echo "::set-output name=TITLE::$(git show -1 --format='%s' -s)"
-	id: latest_commit
+	      run: |
+	        echo "::set-output name=TITLE::$(git show -1 --format='%s' -s)"
+	      id: latest_commit
       - name: Announce on Slack 📢
-	run: |
-	  curl ${{ secrets.SLACK_RELEASE_BOT_WEBHOOK_URL }} \
-	    --request POST \
-	    --header 'Content-type: application/json' \
-	    --data \
-	      '{
-	        "blocks": [
-		  {
-		    "type": "header",
-		    "text": {
-		      "type": "plain_text",
-		      "text": "${{ steps.latest_commit.outputs.TITLE }}"
-		    }
-		  }
-	        ]
-	      }'
+        run: |
+          curl ${{ secrets.SLACK_RELEASE_BOT_WEBHOOK_URL }} \
+            --request POST \
+            --header 'Content-type: application/json' \
+            --data \
+              '{
+                "blocks": [
+                  {
+                    "type": "header",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "${{ steps.latest_commit.outputs.TITLE }}"
+                    }
+                  }
+                ]
+              }'
  ```
 
  It adds a job by the end, called `slack`. This jobs `needs` the `deploy` job to run first so we only announce the release after the deployment. It gets the latest commit message to be used as release title (this is completely open to customization) and afterwards it sends a POST request to our webhook.
@@ -169,18 +169,18 @@ on:
       - run: npm run build:app
       - run: npm run deploy
       slack:
-    	needs: deploy
-    	runs-on: ubuntu-latest
-    	steps:
+        needs: deploy
+        runs-on: ubuntu-latest
+        steps:
       	  - uses: actions/checkout@v2.3.4
       	  - name: Get latest commit info
             run: |
               echo "::set-output name=TITLE::$(git show -1 --format='%s' -s)"
             id: latest_commit
       	  - uses: github-username/my-action@main
-	    with:
-	      webhook_url: ${{ secrets.SLACK_RELEASE_BOT_WEBHOOK_URL }}
-	      title: ${{ steps.latest_commit.outputs.TITLE }}
+            with:
+              webhook_url: ${{ secrets.SLACK_RELEASE_BOT_WEBHOOK_URL }}
+              title: ${{ steps.latest_commit.outputs.TITLE }}
  ```
 
  Instead of performing the `curl` ourselves, we just use the new action and using `with` we can pass the requried variables.
