@@ -16,9 +16,9 @@ The main feature/functionality your application needs to have is: "Incoming Webh
 
 GitHub Actions got quite popular in the past 1-2 years and are a good way to setup continuous integration to our applications on GitHub. It has way more features than just "run tests on every pull request" but I will leave it up to their docs to walk you through the multitude of options it offers: https://docs.github.com/en/actions
 
-In short, a GitHub Action has a name, a trigger and job(s). The name helps us to easily identify what the action is supposed to do. The trigger defines when the action will run, for example every push, every pull request, every comment, every release... The jobs are a sequence of steps that the action will perform. Again, GitHub docs will do a better job than me explaining each of these blocks.
+In short, a workflow has a name, a trigger and job(s). The name helps us to easily identify what the workflow is supposed to do. The trigger defines when the workflow will run, for example every push, every pull request, every comment, every release... The jobs are a sequence of steps that the workflow will perform, these can be GitHub Actions. Again, GitHub docs will do a better job than me explaining each of these blocks.
 
-I would like to start creating a generic GitHub Action that will trigger for every push:
+I would like to start creating a generic workflow that will trigger for every push:
 
 ```yml
 # Action name
@@ -41,7 +41,7 @@ on:
       - run: npm run deploy
  ```
 
- The action above is an example on how you can build and deploy your application for every push on `main`. Now let's enhance it to notify a channel, on Slack, every time the application is deployed.
+ The workflow above is an example on how you can build and deploy your application for every push on `main`. Now let's enhance it to notify a channel, on Slack, every time the application is deployed.
 
 ```yml
 # Action name
@@ -108,7 +108,7 @@ on:
 
  The simplest, for this scenario, way to share the `curl` step through different workflows is creating a composite action. Composite actions allow you to group a sequence of steps without much extra setup. All you need is one file by the end.
 
-*There is, of course, one limitation. Composite actions won't allow you to reuse other actions inside of it. In short: you can use the `use` key in your steps.*
+*There is, of course, one limitation. Composite actions won't allow you to reuse other actions inside of it. In short: you can use the `uses` key in your steps.*
 
 You need to create a new repository and add a file called `action.yml`. This file will have the following template:
 
@@ -125,8 +125,7 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Announce on Slack 📢
-      shell: bash
+    - shell: bash
       run: |
         curl ${{ inputs.webhook_url }} \
           --request POST \
