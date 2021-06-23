@@ -14,7 +14,7 @@ The main feature/functionality your application needs to have is: "Incoming Webh
 
 ## Creating a GitHub Action to trigger the webhook
 
-GitHub Actions got quite popular in the past 1-2 years and are a good way to setup continuous integration to our applications on GitHub. It has a way more features than just "run tests on every pull request" but I will leave it up to their docs to walk you thorugh the multitude of options it offers: https://docs.github.com/en/actions
+GitHub Actions got quite popular in the past 1-2 years and are a good way to setup continuous integration to our applications on GitHub. It has way more features than just "run tests on every pull request" but I will leave it up to their docs to walk you through the multitude of options it offers: https://docs.github.com/en/actions
 
 In short a GitHub Action has a name, a trigger and job(s). The name helps us to easily identify what the action is supposed to do. The trigger defines when the action will run, for example every push, every pull request, every comment, every release... The jobs are a sequence of steps that the action will perform. Again, GitHub docs will do a better job than me explaning each of these blocks.
 
