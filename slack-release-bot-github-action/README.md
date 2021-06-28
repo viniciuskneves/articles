@@ -1,3 +1,5 @@
+![Cover image](./cover.png)
+
 # Creating a GitHub Action for your Slack release BOT
 
 Almost all of us love Slack applications and BOTs that automate something. It could be from an alert, so you're notified as soon as a problem happens, or just a random good morning GIF. In this short tutorial, I would like to go through the process of creating a GitHub Action that posts a message as soon as a release happens (that is our use case) but the main topic is how you can automate things with GitHub Actions, how to reuse "things" across multiple actions and how to start "simple".
