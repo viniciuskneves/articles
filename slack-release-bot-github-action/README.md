@@ -1,6 +1,6 @@
 # Creating a GitHub Action for your Slack release BOT
 
-Almost all of us love Slack applications and BOTs that automate something. It could be from an alert, so you're notified as soon as a problem happens, or just a random good morning GIF. In this short tutorial I would like to go through the process of creating a GitHub Action that posts a message as soon as a release happens (that is our use case) but the main topic is how you can automate things with GitHub Action, how to reuse "things" across multiple actions and how to start "simple".
+Almost all of us love Slack applications and BOTs that automate something. It could be from an alert, so you're notified as soon as a problem happens, or just a random good morning GIF. In this short tutorial I would like to go through the process of creating a GitHub Action that posts a message as soon as a release happens (that is our use case) but the main topic is how you can automate things with GitHub Actions, how to reuse "things" across multiple actions and how to start "simple".
 
 At Homeday we use such process to announce new releases from our component library [Homeday Blocks](https://github.com/homeday-de/homeday-blocks) to our `#frontend` Slack channel and also to announce product releases to the relevant squad's channels. The release BOT looks like the one below:
 
@@ -102,13 +102,13 @@ on:
 
  It works fine for the application we setup but now we need to add it to another application. Easiest way to do it is copy-paste. It works fine until it doesn't 😅
 
- If we want to keep consistency or help others to setup their own workflows, copying a "random" `curl` might not be the best experience and can lead to a lot of errors. One way to avoid that is to create our own action which others can just use. Clear advantage is the easy to reuse and, most important, documentation.
+ If we want to keep consistency or help others to setup their own workflows, copying a "random" `curl` might not be the best experience and can lead to a lot of errors, we can create our own GitHub Aciton. Clear advantage is the easy to reuse and, most important, documentation.
 
  Again, GitHub Actions docs do a great job here but it might led you to unanswered questions, like: which kind of action should I create? Docker? Javascript? Composite?
 
  The simplest, for this scenario, way to share the `curl` step through different workflows is creating a composite action. Composite actions allow you to group a sequence of steps without much extra setup. All you need is one file by the end.
 
-*There is, of course, one limitation. Composite actions won't allow you to reuse other actions inside of it. In short: you can use the `uses` key in your steps.*
+*There is, of course, one limitation. Composite actions won't allow you to reuse other actions inside of it. In short: you can't use the `uses` key in your steps.*
 
 You need to create a new repository and add a file called `action.yml`. This file will have the following template:
 
@@ -182,7 +182,7 @@ on:
               title: ${{ steps.latest_commit.outputs.TITLE }}
  ```
 
- Instead of performing the `curl` ourselves, we just use the new action and using `with` we can pass the requried variables.
+ Instead of performing the `curl` ourselves, we just use the new action and using `with` we can pass the required variables.
 
  Now we have a centralized repository where we can standardize the release, make its usage easier and, on top of that, document what is going on, which would be hard if you just copy a `curl` from another workflow.
 
