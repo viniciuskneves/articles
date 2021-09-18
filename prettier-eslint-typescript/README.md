@@ -315,6 +315,7 @@ module.exports = {
 ```
 
 We replaced `eslint-config-prettier` by `plugin:prettier/recommended`. Check ESLint docs about extending a plugin: https://eslint.org/docs/user-guide/configuring/configuration-files#using-a-configuration-from-a-plugin
+I also recommend you to check what `eslint-plugin-prettier` is doing with our ESLint configuration: https://github.com/prettier/eslint-plugin-prettier/blob/a3d6a2259cbda7b2b4a843b6d641b298f03de5ad/eslint-plugin-prettier.js#L66-L75
 
 Running ESLint again we will get:
 
@@ -329,3 +330,190 @@ Running ESLint again we will get:
 Two things to note here:
 1. We are getting `;` errors again, that have been disabled earlier with `eslint-config-prettier`;
 2. The error is coming from the rule `prettier/prettier`, which is added by the plugin. All prettier validations will be reported as `prettier/prettier` rule.
+
+## Typescript
+
+Let's start from the very basic: running ESLint against TS files.
+Right now, running ESLint against your codebase would be `npx eslint .`. That is fine until you want to run it against files that are not ending with `.js`.
+
+Let's have these two files in our code base:
+
+```javascript
+// index.js
+const a = 1
+```
+
+```typescript
+// index.ts
+const a = 1
+```
+
+Running `npx eslint .` we get:
+
+```
+1:7   error  'a' is assigned a value but never used  no-unused-vars
+1:12  error  Insert `;`                              prettier/prettier
+
+✖ 2 problems (2 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+```
+
+It run against our JS file but not our TS file. In order to run against TS files you need to add `--ext .js,.ts` to the ESLint command. By default ESLint will only check for `.js` files.
+
+Running `npx eslint . --ext .js,.ts`
+
+```
+/index.js
+1:7   error  'a' is assigned a value but never used  no-unused-vars
+1:12  error  Insert `;`                              prettier/prettier
+
+/index.ts
+1:7   error  'a' is assigned a value but never used  no-unused-vars
+1:12  error  Insert `;`                              prettier/prettier
+
+✖ 4 problems (4 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+```
+
+Working like a charm so far. Let's add some real TS code and run it again. The TS file will look like:
+
+```typescript
+const a: number = 1
+```
+
+Running ESLint only against the `.ts` file:
+
+```
+1:8  error  Parsing error: Unexpected token :
+
+✖ 1 problem (1 error, 0 warnings)
+```
+
+ESLint doesn't know, by default, how to parse Typescript files. It is a similar problem we faced when running ESLint for the first time with ES5 defaults.
+ESLint has a configuration in which you can specify the parser you want to use. There is also a package, as you could imagine, that handles this parsing for us. It is called [`@typescript-eslint/parser`](https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser).
+
+Let's install it:
+
+```bash
+npm i @typescript-eslint/parser # --save-dev recommended
+```
+
+Now let's configure ESLint to use the new parser:
+
+```javascript
+module.exports = {
+  parser: "@typescript-eslint/parser",
+  extends: [
+    'eslint-config-airbnb-base',
+    'plugin:prettier/recommended',
+  ]
+};
+```
+
+Running ESLint again (`npx eslint index.ts`):
+
+```
+1:7   error  'a' is assigned a value but never used  no-unused-vars
+1:20  error  Insert `;`                              prettier/prettier
+
+✖ 2 problems (2 errors, 0 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+```
+
+Cool! Now we can run ESLint on TS files. Nonetheless, we don't have any rules being used so we need to configure or use some styleguide, like the one we used by AirBnB before.
+There is [`@typescript-eslint/eslint-plugin`](https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin) that offers us some defaults. Let's go with it for now:
+
+```bash
+npm i @typescript-eslint/eslint-plugin # --save-dev recommended
+```
+
+Adding it to our configuration:
+
+```javascript
+module.exports = {
+  parser: "@typescript-eslint/parser",
+  extends: [
+    'eslint-config-airbnb-base',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ]
+};
+```
+
+Now running `npx eslint index.ts`:
+
+```
+1:7   error    Type number trivially inferred from a number literal, remove type annotation  @typescript-eslint/no-inferrable-types
+1:7   warning  'a' is assigned a value but never used                                        @typescript-eslint/no-unused-vars
+1:20  error    Insert `;`                                                                    prettier/prettier
+
+✖ 3 problems (2 errors, 1 warning)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+```
+
+Cool! Now we have also proper linting in our Typescript file. We can also see that the Prettier rule still applies as expected.
+
+Bear in mind that `typescript-eslint` is overriding `eslint-config-airbnb-base` in this case. It means that some rules won't work in TS files that are still valid on JS files. Let's have the files below to see it in action:
+
+```javascript
+// index.js and index.ts
+const a = 1;
+a = 2;
+```
+
+Both files are identical. Running `npx eslint . --ext .js,.ts` we get:
+
+```
+/index.js
+  2:1  error    'a' is constant                         no-const-assign
+  2:1  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/index.ts
+  2:1  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 3 problems (1 error, 2 warnings)
+```
+
+The [`no-const-assign` rule is overwritten by `typescript-eslint` for `.ts` files](https://github.com/typescript-eslint/typescript-eslint/blob/1c1b572c3000d72cfe665b7afbada0ec415e7855/packages/eslint-plugin/src/configs/eslint-recommended.ts#L13) so we don't get the same error for both files.
+To overcome it, we need to change the order of the extended configurations, `typescript-eslint` comes first and `eslint-config-airbnb-base` next. If we do so:
+
+```javascript
+module.exports = {
+  parser: "@typescript-eslint/parser",
+  extends: [
+    "plugin:@typescript-eslint/recommended",
+    "eslint-config-airbnb-base",
+    "plugin:prettier/recommended"
+  ]
+};
+```
+
+Running `npx eslint . --ext .js,.ts`:
+
+```
+/index.js
+  2:1  error    'a' is constant                         no-const-assign
+  2:1  error    'a' is assigned a value but never used  no-unused-vars
+  2:1  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/index.ts
+  2:1  error    'a' is constant                         no-const-assign
+  2:1  error    'a' is assigned a value but never used  no-unused-vars
+  2:1  warning  'a' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 6 problems (4 errors, 2 warnings)
+```
+
+Cool! Now we get the same error for both files.
+
+*One side note: In this example I've a codebase with JS/TS, it might not be your case and you might also use other styleguide where conflicts won't happen.*
+
+## That's all folks!
+
+I hope this article helped you to learn or clarify some concepts behind ESLint, Prettier and Typescript playing together.
+
+In short you've to understand which files ESLint will anaylize and the order of the configurations you want. Image adding now this into a Vue project, for example, you need to add `.vue` to `--ext .js,.ts,.vue` and add (or configure) some styleguide which will add some rules to your project.
+
+Most boilerplates will already have some lint setup and you will mostly disable some rules but in case you want to customize it or update packages (especially major bumps), it is important to understand how to perform the changes and the impacts it might have in your project.
+
+That's is all! Happy linting!
