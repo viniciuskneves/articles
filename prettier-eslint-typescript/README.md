@@ -1,31 +1,31 @@
 # Prettier, ESLint and Typescript
 
-I decided to write this article to sumup a struggle of mine. We've started a new project in the company, Prettier was setup, ESLint was setup and at some point we added Typescript. By the end Typescript was also setup. CI was linting, commit hooks were also linting, VSCode was fixing the code and so on (that is what I thought).
-At some point I was playing with the project and realized that some files were being warned by my editor but not when running the linter (`npm run lint` in my case). I got triggered. I've a hard time accepting that something works but I can't understand, unless it is an absolutely external tool that I didn't have to setup myself but that was not the case here.
+I decided to write this article to sum up a struggle of mine. We've started a new project in the company, Prettier was set up, ESLint was set up and at some point, we added Typescript. By the end, Typescript was also set up. CI was linting, commit hooks were also linting, VSCode was fixing the code, and so on (that is what I thought).
+At some point I was playing with the project and realized that some files were being warned by my editor but not when running the linter (`npm run lint` in my case). I got triggered. I have a hard time accepting that something works but I can't understand unless it is an external tool that I didn't have to set up myself but that was not the case here.
 
-In this article I will summarize some understandings that I've about integrating all the tools above. The main focus is how to setup Prettier, how to setup ESLint, how to integrate both and by the end how to add Typescript to it.
+In this article, I will summarize some understandings that I've about integrating all the tools above. The main focus is how to set up Prettier, how to set up ESLint, how to integrate both, and by the end how to add Typescript to it.
 
 ## Prettier
 
-The first tool I want to explore is [Prettier](https://prettier.io/). I would leave it to you to read more about what it is but in short it is a code formatter. What does it mean? It means that it will keep your codebase consistent (in terms of coding style). Do you use `;`? If yes, it will ensure that all your files have it, for example. I like it for two reasons: we barely have to discuss code formatting and it is easy to onboard new members to the team.
+The first tool I want to explore is [Prettier](https://prettier.io/). I would leave it to you to read more about what it is but, in short, it is a code formatter. What does it mean? It means that it will keep your codebase consistent (in terms of coding style). Do you use `;`? If yes, it will ensure that all your files have it, for example. I like it for two reasons: we barely have to discuss code formatting and it is easy to onboard new members to the team.
 
 *At the time of this writing, Prettier is in version 2.4.1, so keep in mind things might change (especially formatting) in future versions.*
 
-### How to setup Prettier?
+### How to set up Prettier?
 
-I will consider you've a project setup already so in short you need to install it:
+I will consider you have a project set up already so in short, you need to install it:
 
 ```bash
 npm i prettier #--save-dev and --save-exact are recommended
 ```
 
-Right now you can start using Prettier. You don't need any configuration (if you don't want). You can run it against your codebase with:
+Right now you can start using Prettier. You don't need any configuration (if you don't want it). You can run it against your codebase with:
 
 ```bash
 npx prettier .
 ```
 
-The `.` at the end means run across your whole codebase. You can run for a specific file or pattern if you want.
+The `.` at the end means to run across your whole codebase. You can run for a specific file or pattern if you want.
 This command will print the files formatted, nothing special. A more useful command happens when you add `--write` flag. Instead of printing the formatted code, it will write to the origin file.
 
 Let's create a file called `index.js` with the following code:
@@ -43,9 +43,9 @@ const a = 1;
 
 It automatically adds the `;` for us but it is not saved in the file. If we run `npx prettier index.js --write` though, the file will change and the `;` will be added to it.
 
-Cool, that is the simplest setup we can have with Prettier. The [default rules are documented in their website](https://prettier.io/docs/en/options.html) and can be customized (a bit). We will take a look into it next but before I want to mention another flag: `--check`.
+Cool, that is the simplest setup we can have with Prettier. The [default rules are documented on their website](https://prettier.io/docs/en/options.html) and can be customized (a bit). We will take a look into it next but before I want to mention another flag: `--check`.
 
-The `--check` flag, `npx prettier index.js --check`, is useful if you just want to check if a file (or the codebase with `.`) are Prettier compliant. It is useful for CIs and git hooks, for example, if you just want to warn the user (you can also enable `--write` in these scenarios).
+The `--check` flag, `npx prettier index.js --check`, is useful if you just want to check if a file (or the codebase with `.`) is Prettier compliant. It is useful for CIs and git hooks, for example, if you just want to warn the user (you can also enable `--write` in these scenarios).
 
 If we consider the following code again:
 
@@ -64,7 +64,7 @@ Checking formatting...
 
 ### Prettier configuration
 
-You can configure Prettier at some extend. You can do it via the CLI or via a [configuration file](https://prettier.io/docs/en/configuration.html), which is more adequate. The configuration file could be in a variety of formats so you can choose the one that fits you best.
+You can configure Prettier to some extend. You can do it via the CLI or via a [configuration file](https://prettier.io/docs/en/configuration.html), which is more adequate. The configuration file could be in a variety of formats so you can choose the one that fits you best.
 
 Add the configuration file to the root of your project (you can have configurations/folder but I would leave it up to you to explore this path) and start adding rules to it:
 
@@ -89,17 +89,17 @@ Checking formatting...
 All matched files use Prettier code style!
 ```
 
-On top of that, you can also extend configuration and setup a few other things. Check their [configuration documenation](https://prettier.io/docs/en/configuration.html) for more details.
+On top of that, you can also extend configuration and set up a few other things. Check their [configuration documentation](https://prettier.io/docs/en/configuration.html) for more details.
 
 ## ESLint
 
-[ESLint](https://eslint.org/) has been around for a while. In short it does a bit more than Prettier as it analyzes your code in order to find problems (or patterns that you don't want, like variables that are not used should be removed). Again, I invite you to read ESLint documentation if you want to go deeper into the topic. I like ESLint for the simple reason it helps me to find problems and configure some patterns in the project (it might be useful when onboarding new people). It is extremely extensible as well in case you're interested.
+[ESLint](https://eslint.org/) has been around for a while. In short, it does a bit more than Prettier as it analyzes your code to find problems (or patterns that you don't want, like variables that are not used should be removed). Again, I invite you to read ESLint documentation if you want to go deeper into the topic. I like ESLint for the simple reason it helps me to find problems and configure some patterns in the project (it might be useful when onboarding new people). It is extremely extensible as well in case you're interested.
 
 *At the time of this writing, ESLint is in version 7.32.0, so keep in mind things might change (especially formatting) in future versions. Version 8 is in beta at the moment.*
 
-### How to setup ESLint?
+### How to set up ESLint?
 
-In short, quite similar to Prettier but you need the configuration file. I will consider you've a project setup already so in short you need to install it:
+In short, quite similar to Prettier but you need the configuration file. I will consider you have a project set up already so, in short, you need to install it:
 
 ```bash
 npm i eslint #--save-dev is recommended
@@ -141,11 +141,11 @@ const a = 1
 ✖ 1 problem (1 error, 0 warnings)
 ```
 
-This is simply the issue with a default ESLint configuration. It considers ES5 by default, so `const` is not allowed yet, and some older setup that might make sense to your project but not in general.
+This is simply the issue with a default ESLint configuration. It considers ES5 by default, so `const` is not allowed yet, and some older setup might make sense to your project but not in general.
 
-We can spend hours configuring ESLint but in general we get a default from a styleguide (AirBnB for example) and apply to our project. If you use the init command you can do so.
+We can spend hours configuring ESLint but in general, we get a default from a style guide (AirBnB for example) and apply it to our project. If you use the init command you can do so.
 
-Let's install [AirBnB ESLint configuration](https://www.npmjs.com/package/eslint-config-airbnb-base), it also requires `eslint-plugin-import` to be installed (following their documentation) so:
+Let's install [Airbnb ESLint configuration](https://www.npmjs.com/package/eslint-config-airbnb-base), it also requires `eslint-plugin-import` to be installed (following their documentation) so:
 
 ```bash
 npm i eslint-config-airbnb-base eslint-plugin-import # --save-dev is recommended
@@ -173,13 +173,13 @@ Running `npx eslint index.js` again we get:
 
 Cool! Now we get errors defined by the AirBnB guide. We can use the `--fix` option, which works similar to `--write` from Prettier, in case we want to fix the errors when possible.
 
-ESLint allows you to extensively configure it if you want. It goes a way beyond the scope here and I will leave it up to you to explore and play with it: https://eslint.org/docs/user-guide/configuring/
+ESLint allows you to extensively configure it if you want. It goes beyond the scope here and I will leave it up to you to explore and play with it: https://eslint.org/docs/user-guide/configuring/
 
 ## Prettier + ESLint
 
 There are a lot of tutorials online on how to connect both. I want to take a different approach and try to reason about each tool and how they connect.
 
-I will assume that we've the following Prettier configuration:
+I will assume that we have the following Prettier configuration:
 
 ```json
 // .prettierrc
@@ -188,7 +188,7 @@ I will assume that we've the following Prettier configuration:
 }
 ```
 
-I will assume that we've the following ESLint configuration:
+I will assume that we have the following ESLint configuration:
 
 ```javascript
 // .eslintrc.js
@@ -225,7 +225,7 @@ Cool! If we run ESLint, we get:
   2 errors and 0 warnings potentially fixable with the `--fix` option.
 ```
 
-Not so cool! Running ESLint with fix will fixes these issues. Now if we run Prettier again we get:
+Not so cool! Running ESLint with `--fix` will fix these issues. Now if we run Prettier again we get:
 
 ```
 Checking formatting...
@@ -265,7 +265,7 @@ module.exports = { a }
 ```
 
 It was a valid file for Prettier but invalid for ESLint. Using the new configuration, it becomes valid as the conflicting [rule `semi` has been disabled](https://github.com/prettier/eslint-config-prettier/blob/main/index.js#L73).
-It is fine if we want to ignore the rules from Prettier but in general we want that Prettier rules override ESLint rules.
+It is fine if we want to ignore the rules from Prettier but in general, we want Prettier rules to override ESLint rules.
 In case we delete the Prettier configuration file and use its defaults (which requires `;`), running Prettier check will result in:
 
 ```
@@ -274,9 +274,9 @@ Checking formatting...
 [warn] Code style issues found in the above file(s). Forgot to run Prettier?
 ```
 
-The file is not valid anymore as it is missing the `;` but ESLint run won't fail, as the Prettier rules have been disabled when running ESLint.
+The file is not valid anymore as it is missing the `;` but the ESLint run won't fail, as the Prettier rules have been disabled when running ESLint.
 
-One important thing to note here: the order used by `extends`, in the ESLint configuration, matters. If we apply the following order we will get an error as AirBnB rules will override Prettier disabled rules when running ESLint:
+One important thing to note here: the order used by `extends`, in the ESLint configuration, matters. If we use the following order we will get an error as AirBnB rules will override Prettier disabled rules when running ESLint:
 
 ```javascript
 module.exports = {
@@ -314,7 +314,7 @@ module.exports = {
 };
 ```
 
-We replaced `eslint-config-prettier` by `plugin:prettier/recommended`. Check ESLint docs about extending a plugin: https://eslint.org/docs/user-guide/configuring/configuration-files#using-a-configuration-from-a-plugin
+We replaced `eslint-config-prettier` with `plugin:prettier/recommended`. Check ESLint docs about extending a plugin: https://eslint.org/docs/user-guide/configuring/configuration-files#using-a-configuration-from-a-plugin
 I also recommend you to check what `eslint-plugin-prettier` is doing with our ESLint configuration: https://github.com/prettier/eslint-plugin-prettier/blob/a3d6a2259cbda7b2b4a843b6d641b298f03de5ad/eslint-plugin-prettier.js#L66-L75
 
 Running ESLint again we will get:
@@ -329,7 +329,7 @@ Running ESLint again we will get:
 
 Two things to note here:
 1. We are getting `;` errors again, that have been disabled earlier with `eslint-config-prettier`;
-2. The error is coming from the rule `prettier/prettier`, which is added by the plugin. All prettier validations will be reported as `prettier/prettier` rule.
+2. The error is coming from the rule `prettier/prettier`, which is added by the plugin. All prettier validations will be reported as `prettier/prettier` rules.
 
 ## Typescript
 
@@ -358,7 +358,7 @@ Running `npx eslint .` we get:
   1 error and 0 warnings potentially fixable with the `--fix` option.
 ```
 
-It run against our JS file but not our TS file. In order to run against TS files you need to add `--ext .js,.ts` to the ESLint command. By default ESLint will only check for `.js` files.
+It runs against our JS file but not our TS file. To run against TS files you need to add `--ext .js,.ts` to the ESLint command. By default, ESLint will only check for `.js` files.
 
 Running `npx eslint . --ext .js,.ts`
 
@@ -375,7 +375,7 @@ Running `npx eslint . --ext .js,.ts`
   2 errors and 0 warnings potentially fixable with the `--fix` option.
 ```
 
-Working like a charm so far. Let's add some real TS code and run it again. The TS file will look like:
+Working like a charm so far. Let's add some real TS code and run it again. The TS file will look like this:
 
 ```typescript
 const a: number = 1
@@ -506,14 +506,14 @@ Running `npx eslint . --ext .js,.ts`:
 
 Cool! Now we get the same error for both files.
 
-*One side note: In this example I've a codebase with JS/TS, it might not be your case and you might also use other styleguide where conflicts won't happen.*
+*One side note: In this example, I have a codebase with JS/TS, it might not be your case and you might also use another style guide where conflicts won't happen.*
 
 ## That's all folks!
 
-I hope this article helped you to learn or clarify some concepts behind ESLint, Prettier and Typescript playing together.
+I hope this article helped you to learn or clarify some concepts behind ESLint, Prettier, and Typescript playing together.
 
-In short you've to understand which files ESLint will anaylize and the order of the configurations you want. Image adding now this into a Vue project, for example, you need to add `.vue` to `--ext .js,.ts,.vue` and add (or configure) some styleguide which will add some rules to your project.
+In short, you've to understand which files ESLint will analyze and the order of the configurations you want. Image adding now this into a Vue project, for example, you need to add `.vue` to `--ext .js,.ts,.vue` and add (or configure) some style guide which will add some rules to your project.
 
-Most boilerplates will already have some lint setup and you will mostly disable some rules but in case you want to customize it or update packages (especially major bumps), it is important to understand how to perform the changes and the impacts it might have in your project.
+Most boilerplates will already have some lint set up and you will mostly disable some rules but in case you want to customize it or update packages (especially major bumps), it is important to understand how to perform the changes and the impacts it might have in your project.
 
 That's is all! Happy linting!
