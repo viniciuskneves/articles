@@ -26,7 +26,7 @@ npx prettier .
 ```
 
 The `.` at the end means run across your whole codebase. You can run for a specific file or pattern if you want.
-This command will print the files formatted, nothing special. A more useful command happens when you add `--write` flag. Instead of printind the formatted code, it will write to the origin file.
+This command will print the files formatted, nothing special. A more useful command happens when you add `--write` flag. Instead of printing the formatted code, it will write to the origin file.
 
 Let's create a file called `index.js` with the following code:
 
