@@ -52,3 +52,4 @@ This is a list of the articles I've published in the following platforms (not al
 ## [Prettier, ESLint and Typescript](./prettier-eslint-typescript/README.md)
 
 > In this article, I will summarize some understandings that I've about integrating all the tools above. The main focus is how to set up Prettier, how to set up ESLint, how to integrate both, and by the end how to add Typescript to it.
+- [DEV](https://dev.to/viniciuskneves/prettier-eslint-and-typescript-491j)
