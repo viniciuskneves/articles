@@ -48,3 +48,7 @@ This is a list of the articles I've published in the following platforms (not al
 > I went through the process of creating a GitHub Action that posts a message as soon as a release happens (that is our use case) but the main topic is how you can automate things with GitHub Actions, how to reuse “things” across multiple actions and how to start “simple”.
 - [Medium](https://medium.com/homeday/creating-a-github-action-for-your-slack-release-bot-231216ffd2d4)
 - [DEV](https://dev.to/viniciuskneves/creating-a-github-action-for-your-slack-release-bot-ppj)
+
+## [Prettier, ESLint and Typescript](./prettier-eslint-typescript/README.md)
+
+> In this article, I will summarize some understandings that I've about integrating all the tools above. The main focus is how to set up Prettier, how to set up ESLint, how to integrate both, and by the end how to add Typescript to it.
