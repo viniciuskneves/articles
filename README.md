@@ -62,3 +62,4 @@ This is a list of the articles I've published in the following platforms (not al
 
 - [DEV](https://dev.to/viniciuskneves/prettier-eslint-and-typescript-491j)
 - [Medium](https://viniciuskneves.medium.com/prettier-eslint-and-typescript-432e0ce06f01)
+- [LinkedIn](https://www.linkedin.com/pulse/prettier-eslint-typescript-vinicius-kiatkoski-neves)
