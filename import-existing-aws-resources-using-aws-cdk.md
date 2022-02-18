@@ -2,17 +2,17 @@
 
 I like infrastructure and I advocate AWS CDK for one reason: it allows us to use Typescript (or other languages) which is less of a blocker for new contributors in frontend. It is verbose but it does a lot of the weight lifting for you and is extremely flexible as well.
 
-I've always been curious about the following situation: most companies start setting up their infrastructure through AWS Console. At some point Infrastructure as Code is introuduced. How do we close the gap between them? Shall we code everything from scratch?
+I've always been curious about the following situation: most companies start setting up their infrastructure through AWS Console. At some point Infrastructure as Code is introduced. How do we close the gap between them? Shall we code everything from scratch?
 
-Since a while (end of 2019) we can [import existing AWS resources into a CloudFormation Stack](https://aws.amazon.com/blogs/aws/new-import-existing-resources-into-a-cloudformation-stack/). The blog post from AWS does a good job explaining how it works. There is another [blog post](https://rusyasoft.github.io/aws,%20cdk/2021/05/23/cdk-existing-resource/) that explain how to do it with AWS CDK.
+For a while (end of 2019) we can [import existing AWS resources into a CloudFormation Stack](https://aws.amazon.com/blogs/aws/new-import-existing-resources-into-a-cloudformation-stack/). The blog post from AWS does a good job explaining how it works. There is another [blog post](https://rusyasoft.github.io/aws,%20cdk/2021/05/23/cdk-existing-resource/) that explains how to do it with AWS CDK.
 
 My goal here is to make it visual and with code examples. If you follow the steps from both blog posts you are good to go but I found myself confused with some names in between and decided to summarize it for myself (as I'm pretty sure I won't remember how to do it next time) and maybe help you as well.
 
-I'm assuming that you're familiar with AWS CDK and also with CloudFormation. If not, don't hesitate to ask questions and I can try to answer them or guide you to another resources.
+I'm assuming that you're familiar with AWS CDK and also with CloudFormation. If not, don't hesitate to ask questions and I can try to answer them or guide you to other resources.
 
 ## AWS CDK output
 
-AWS CDK "simply" translates some code we write into a CloudFormation template, in this case a `.json` file by the end. It is this file that is used by AWS CloudFormation to setup our infrastructure.
+AWS CDK "simply" translates some code we write into a CloudFormation template in this case, a `.json` file by the end. It is this file that is used by AWS CloudFormation to setup our infrastructure.
 
 The output from AWS CDK can be found inside the `cdk.out/` folder. The CloudFormation template from your stack is in the file `MyStackName.template.json`.
 
@@ -49,7 +49,7 @@ Now we can run `deploy` and, after deploying our Stack, we should be able to see
 
 <img width="513" alt="Created CloudFormation Stack" src="https://user-images.githubusercontent.com/1734873/154743207-44004b28-f184-4859-ba66-d5f0c03c6e16.png">
 
-Following the instructions from AWS, we need to create a template with the resource we would like to import, in this case a S3 bucket. We can rely on AWS CDK to do the job for us. In order to create a S3 bucket, we need the following piece of code:
+Following the instructions from AWS, we need to create a template with the resource we would like to import in this case, a S3 bucket. We can rely on AWS CDK to do the job for us. To create a S3 bucket, we need the following piece of code:
 
 ```typescript
 import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
@@ -71,7 +71,7 @@ export class AwsCdkTypescriptStack extends Stack {
 
 ```
 
-Now we can run `synth` in order to obtain our CloudFormation template. This template contains a bucket but it is not yet deployed, we will use it to manually import the resource through AWS console.
+Now we can run `synth` to obtain our CloudFormation template. This template contains a bucket but it is not yet deployed, we will use it to manually import the resource through the AWS console.
 
 We can go to our stack in AWS CloudFormation console, click `Stack Actions` and `Import resources into stack`:
 
@@ -92,7 +92,7 @@ In the last step you will see the applied changes and our imported bucket will b
 
 After a while (in our example it happens almost immediately as we're talking about a single resource) you will find the resource imported in your stack:
 
-<img width="612" alt="CloudFormation events imporing resource" src="https://user-images.githubusercontent.com/1734873/154749260-511fe8d2-bb56-4a37-9646-606893b5c961.png">
+<img width="612" alt="CloudFormation events importing resource" src="https://user-images.githubusercontent.com/1734873/154749260-511fe8d2-bb56-4a37-9646-606893b5c961.png">
 <img width="574" alt="List of all S3 resources from CloudFormation template" src="https://user-images.githubusercontent.com/1734873/154749541-216cb1d4-c8d4-4899-a901-6d64c3a8f94b.png">
 
 Now we can try to run deploy again and we will get a message that no changes have been found in the stack, which means success to us:
@@ -137,13 +137,13 @@ After deploying, we've:
 
 ## Importing resources that don't follow defaults
 
-Our example above followed a clean approach: the real bucket had no extra configuration, it was the default, exactly the same setup from a bucket created from AWS CDK without any configuration.
+Our example above followed a clean approach: the real bucket had no extra configuration, it was the default, the same setup from a bucket created from AWS CDK without any configuration.
 
 **What would happen if the bucket had, for example, static webhosting setup?**
 
 It will allow us to import the resource as we did in the example above. One curiosity: the defaults, from AWS CDK, won't override already set configuration.
 
-If we deploy the stack, it won't disabled static webhosting, for example. The only way to disable it (overwrite it), is to enable it through CDK, deploy, and then remove it from CDK and deploy again.
+If we deploy the stack, it won't disable static webhosting, for example. The only way to disable it (overwrite it), is to enable it through CDK, deploy, and then remove it from CDK and deploy again.
 
 Even if you run `cdk diff` you won't get this as a diff as it will compare the output of `synth` with the template that has been uploaded to CloudFormation. Stack drift won't highlight it as well which is weird.
 
