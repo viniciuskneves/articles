@@ -1,5 +1,8 @@
 # Importing existing AWS resources using AWS CDK
 
+![Cover image](https://images.unsplash.com/photo-1528402671825-9a525ab8b5b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80)
+_[Cover photo](https://unsplash.com/photos/NPsqco-tNR0) from [Gavin Allanwood](https://unsplash.com/@gavla) on [Unsplash](https://unsplash.com/)._
+
 I like infrastructure and I advocate AWS CDK for one reason: it allows us to use Typescript (or other languages) which is less of a blocker for new contributors in frontend. It is verbose but it does a lot of the weight lifting for you and is extremely flexible as well.
 
 I've always been curious about the following situation: most companies start setting up their infrastructure through AWS Console. At some point Infrastructure as Code is introduced. How do we close the gap between them? Shall we code everything from scratch?
