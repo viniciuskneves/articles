@@ -75,3 +75,4 @@ This is a list of the articles I've published in the following platforms (not al
 > I've always been curious about the following situation: most companies start setting up their infrastructure through AWS Console. At some point Infrastructure as Code is introduced. How do we close the gap between them? Shall we code everything from scratch?
 
 - [DEV](https://dev.to/viniciuskneves/importing-existing-aws-resources-using-aws-cdk-2l22)
+- [Medium](https://viniciuskneves.medium.com/importing-existing-aws-resources-using-aws-cdk-30e8576d573c)
