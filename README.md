@@ -69,3 +69,10 @@ This is a list of the articles I've published in the following platforms (not al
 > I want to highlight how we approached a migration in terms of infrastructure, which challenges we faced, and what we learned on the way.
 
 - [Medium](https://medium.com/homeday/the-road-to-static-site-generation-on-aws-3e71e70865eb)
+
+## [Importing existing AWS resources using AWS CDK](./import-existing-aws-resources-using-aws-cdk.md)
+
+> I've always been curious about the following situation: most companies start setting up their infrastructure through AWS Console. At some point Infrastructure as Code is introduced. How do we close the gap between them? Shall we code everything from scratch?
+
+- [DEV](https://dev.to/viniciuskneves/importing-existing-aws-resources-using-aws-cdk-2l22)
+- [Medium](https://viniciuskneves.medium.com/importing-existing-aws-resources-using-aws-cdk-30e8576d573c)
