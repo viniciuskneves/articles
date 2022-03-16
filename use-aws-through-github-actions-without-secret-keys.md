@@ -1,4 +1,4 @@
-# XXX
+# Use AWS through GitHub Actions without secret keys
 
 It all started with the following question: How do we [safely store AWS IAM User Keys (Access and Secret) created by IaC](https://serverfault.com/questions/1096129/safely-store-aws-iam-user-keys-access-and-secret-created-by-iac)?
 
