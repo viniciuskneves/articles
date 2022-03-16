@@ -2,27 +2,27 @@
 
 It all started with the following question: How do we [safely store AWS IAM User Keys (Access and Secret) created by IaC](https://serverfault.com/questions/1096129/safely-store-aws-iam-user-keys-access-and-secret-created-by-iac)?
 
-Imagine the following scenario: you've a Bucket that will host your Frontend assets. Your Frontend lives in another repository and you use, in my example, GitHub Actions to deploy (move) those files to the Bucket. You want to give permission to your GitHub Actions to perform that and only that.
+Imagine the following scenario: you have a Bucket that will host your Frontend assets. Your Frontend lives in another repository and you use, in my example, GitHub Actions to deploy (move) those files to the Bucket. You want to give permission to your GitHub Actions to perform that and only that.
 
 You can, of course, add your credentials to the repository but you will give it too many permissions.
 
-You can create an User, in your infrastructure, that has only the permission needed by GitHub Actions. This sounds a way better already. The issue is: where do we store this User's keys?
+You can create a User, in your infrastructure, that has only the permission needed by GitHub Actions. This sounds way better already. The issue is: where do we store this User's keys?
 1. We can have the keys as Output of our Stack. It is not safe, everyone that has access to the logs from your GitHub Action can see it (imagine an open source repository).
 2. We can store these keys in SSM. It works but everyone that has access to SSM has access to it (not a big deal in my case).
 3. We can store these keys in Secrets Manager. It works but everyone that has access to Secrets Manager has access to it (not a big deal in my case).
 4. We can generate the keys manually. It works and only the person that generated the keys will know it (hopefully store them in GitHub Secrets and forget about it).
 
-All the steps above work at some extent. The only one that doesn't require any manual effort is option 1. which is the least secure one.
+All the steps above work to some extent. The only one that doesn't require any manual effort is option 1. which is the least secure one.
 
-The best approach, from my understanding, is another one. I would like to go through it step by step and how to setup it using AWS CDK.
+The best approach, from my understanding, is another one. I would like to go through it step by step and how to setup it up using AWS CDK.
 
 ## OpenID Connect (OIDC)
 
 Since October of 2021 GitHub Actions allow it: https://github.blog/changelog/2021-10-27-github-actions-secure-cloud-deployments-with-openid-connect/
 
-OpenID Connect allows you to connect an external provider (GitHub Actions) with you AWS account. You can read more about it here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html
+OpenID Connect allows you to connect an external provider (GitHub Actions) with your AWS account. You can read more about it here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html
 
-The external provider will assume a defined role which has the permissions (policies) we need. You can read more about IAM roles here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
+The external provider will assume a defined role that has the permissions (policies) we need. You can read more about IAM roles here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
 
 Breaking it into steps:
 1. We need a policy that allows us to move files into the Bucket (nothing more than that);
@@ -37,7 +37,7 @@ GitHub and AWS have an extensive documentation about it:
 
 How does it look in the code?
 
-1. Let's imagine we've a Bucket
+1. Let's imagine we have a Bucket
 ```typescript
 const bucket = new Bucket(this, "Bucket");
 ```
@@ -76,7 +76,7 @@ The `assumedBy` property can be customized:
 bucket.grantPut(role);
 ```
 
-Once deployed everything is ready on AWS side, now we go to GitHub side.
+Once deployed everything is ready on the AWS side, now we go to the GitHub side.
 
 5. Let's update our GitHub Action to assume the role
 ```yaml
