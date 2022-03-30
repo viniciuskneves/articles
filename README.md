@@ -76,3 +76,10 @@ This is a list of the articles I've published in the following platforms (not al
 
 - [DEV](https://dev.to/viniciuskneves/importing-existing-aws-resources-using-aws-cdk-2l22)
 - [Medium](https://viniciuskneves.medium.com/importing-existing-aws-resources-using-aws-cdk-30e8576d573c)
+
+## [Use AWS through GitHub Actions without secret keys](./use-aws-through-github-actions-without-secret-keys.md)
+
+> Imagine the following scenario: you have a Bucket that will host your Frontend assets. Your Frontend lives in another repository and you use, in my example, GitHub Actions to deploy (move) those files to the Bucket. You want to give permission to your GitHub Actions to perform that and only that.
+
+- [DEV](https://dev.to/viniciuskneves/use-aws-through-github-actions-without-secret-keys-32eo)
+- [Medium](https://viniciuskneves.medium.com/use-aws-through-github-actions-without-secret-keys-e9b67a3dfd7a)
