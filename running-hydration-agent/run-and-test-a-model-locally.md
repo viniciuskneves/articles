@@ -346,3 +346,110 @@ Token usage: { input_tokens: 6, cache_read_input_tokens: 84, output_tokens: 3 }
 Ehhh, that is wild 😅
 Running it multiple times will result in different results...
 So, what is going on here?
+
+In short: with no thinking, the LLM tries the "most likely the answer" based on probability.
+This is where `temperature` concept comes in.
+
+Temperature influences the probability of a certain token being used in the response, you can read more about it here: https://academy.claude.com/courses/building-with-the-claude-api/temperature
+
+Continuing to our example, we can still get the right answer with thinking disabled, we just need to instruct the LLM to "think" in its answer.
+
+If we update the prompt with `Show your calculation step by step, then give the final number.` instead of `Reply with only the number, no units, no explanation.`, the answer turns into:
+
+```bash
+Stop reason: end_turn
+
+
+Content block: {
+  type: 'text',
+  text: 'To calculate the total time for the running and walking session, we need to break down the distance covered into segments, calculate the time for each segment using the given paces, and sum them up.\n' +
+    '\n' +
+    '**Note on Units:** All distances will be converted to kilometers (km) to match the pace units (min/km).\n' +
+    '*   $1 \\text{ km} = 1000 \\text{ meters}$\n' +
+    '*   Therefore, $600 \\text{ m} = 0.6 \\text{ km}$\n' +
+    '\n' +
+    '### Step 1: Calculate the Running Distance and Time\n' +
+    '\n' +
+    '**Part A: First set of laps**\n' +
+    '*   **Laps:** 3 laps\n' +
+    '*   **Distance per lap:** 2.5 km\n' +
+    '*   **Total Distance ($D_1$):** $3 \\times 2.5 = 7.5 \\text{ km}$\n' +
+    '*   **Pace:** 5 minutes 30 seconds per km.\n' +
+    '    *   Convert to decimal minutes: $5 + \\frac{30}{60} = 5.5 \\text{ min/km}$\n' +
+    '*   **Time ($T_1$):** $\\text{Distance} \\times \\text{Pace}$\n' +
+    '    *   $T_1 = 7.5 \\text{ km} \\times 5.5 \\text{ min/km}$\n' +
+    '    *   $T_1 = 41.25 \\text{ minutes}$\n' +
+    '\n' +
+    '**Part B: Second set of laps**\n' +
+    '*   **Laps:** 4 laps\n' +
+    '*   **Distance per lap:** 1.75 km\n' +
+    '*   **Total Distance ($D_2$):** $4 \\times 1.75 = 7.0 \\text{ km}$\n' +
+    '*   **Pace:** Same as above (5.5 min/km)\n' +
+    '*   **Time ($T_2$):** $\\text{Distance} \\times \\text{Pace}$\n' +
+    '    *   $T_2 = 7.0 \\text{ km} \\times 5.5 \\text{ min/km}$\n' +
+    '    *   $T_2 = 38.5 \\text{ minutes}$\n' +
+    '\n' +
+    '**Total Running Time:**\n' +
+    '$$41.25 + 38.5 = 79.75 \\text{ minutes}$$\n' +
+    '\n' +
+    '---\n' +
+    '\n' +
+    '### Step 2: Calculate the Walking Distance and Time\n' +
+    '\n' +
+    '*   **Distance:** 600 m\n' +
+    '*   **Convert to km:** $0.6 \\text{ km}$\n' +
+    '*   **Pace:** 12 min/km\n' +
+    '*   **Time ($T_3$):** $\\text{Distance} \\times \\text{Pace}$\n' +
+    '    *   $T_3 = 0.6 \\text{ km} \\times 12 \\text{ min/km}$\n' +
+    '    *   $T_3 = 7.2 \\text{ minutes}$\n' +
+    '\n' +
+    '---\n' +
+    '\n' +
+    '### Step 3: Calculate the Total Session Time\n' +
+    '\n' +
+    'Add the total running time and the walking time together:\n' +
+    '$$\\text{Total Time} = T_1 + T_2 + T_3$$\n' +
+    '$$\\text{Total Time} = 79.75 + 7.2$$\n' +
+    '$$\\text{Total Time} = 86.95 \\text{ minutes}$$\n' +
+    '\n' +
+    '*(Optional: To convert to hours and minutes)*\n' +
+    '$86.95 \\text{ min} = 1 \\text{ hour } 26.95 \\text{ min}$ (or approximately $1 \\text{ hr } 27 \\text{ min}$).\n' +
+    '\n' +
+    '### Final Answer\n' +
+    'The whole session takes **86.95** minutes.'
+}
+
+
+Token usage: { input_tokens: 91, cache_read_input_tokens: 0, output_tokens: 795 }
+```
+
+The answer is correct in this case! The reason is that we gave the LLM a blank sheet to think and take notes.
+The way LLMs work is: given the input, let's produce the next output token. Given the input + the output token, let's produce the next output token... This repeats and so the "blank sheet" turns into its own thinking step, similar to how we would solve it ourselves.
+
+This doesn't mean we shouldn't use the `thinking` step, it is just to illustrate what is happening under the hood. Using the `thinking` step has its own benefits.
+
+## Tools
+
+Tools give LLMs access to the "world", besides their training data.
+
+If we prompt the following: `What day is today?`, we get an unexpected answer.
+
+```bash
+Stop reason: end_turn
+
+
+Content block: {
+  type: 'text',
+  text: 'Today is Friday, June 13th.\n' +
+    '\n' +
+    '*(Note: Since I am an AI, my awareness of the current date is based on the latest training data cutoff and available tools at that time. For the most accurate real-time date in your specific context or location, please check a reliable calendar or clock app on your device.)*'
+}
+
+
+Token usage: { input_tokens: 17, cache_read_input_tokens: 0, output_tokens: 69 }
+```
+
+The LLM needs access to the "world" in order to know which day is today.
+One way of doing that is through tools: they allow the LLM to access the "external world" through a determined API.
+
+Our example above needs a tool to get the current date, let's create one.
