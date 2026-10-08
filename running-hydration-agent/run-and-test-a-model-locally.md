@@ -453,3 +453,112 @@ The LLM needs access to the "world" in order to know which day is today.
 One way of doing that is through tools: they allow the LLM to access the "external world" through a determined API.
 
 Our example above needs a tool to get the current date, let's create one.
+
+A tool follows a defined API which requires it to have an Input Schema (deterministic input parameters to be used by the tool being called) and a name, everything else is optional.
+Adding a description to the tool, although optional, is highly recommended, given this is the piece of text the LLM will use to determine if the tool should be called or not.
+
+### Now, a tool
+
+Our tool will return what date and time it is right now, given a provided timezone.
+I'm `zod` here as a library to define the Input Schema as it becomes a reliable way to parse the input later in code.
+
+```typescript
+const NowInputSchema = z.object({
+  timezone: z
+    .string()
+    .default("UTC")
+    .describe("IANA timezone such as Europe/Amsterdam. Defaults to UTC."),
+});
+const NowInputJSONSchema = z.toJSONSchema(NowInputSchema);
+const nowTool: Tool = {
+  name: "now",
+  description: "Current date and time. Pass the timezone from geocode to get the local date at the run location. Call this before resolving words like today, tomorrow or Saturday.",
+  input_schema: NowInputJSONSchema as Tool["input_schema"],
+}
+
+const response = await client.messages.create({
+  model: MODEL,
+  max_tokens: 10000,
+  tools: [nowTool],
+  messages: [
+    { role: "user", content: `What day is today?`},
+  ],
+});
+```
+
+We get the following output now:
+
+```bash
+Stop reason: tool_use
+
+
+Content block: {
+  type: 'thinking',
+  thinking: `The user is asking what day it is today. I need to use the "now" function to get the current date and time. However, this function requires a timezone parameter. Since the user didn't specify a location or timezone, I should probably use a default one like UTC, which would be reasonable for providing the current day information.\n` +
+    '\n' +
+    "Let me call the now function with a default timezone (I'll use UTC as it's mentioned in the function description that UTC is the default)."
+}
+Content block: {
+  type: 'tool_use',
+  id: 'call_0mtb8q42',
+  name: 'now',
+  input: { timezone: 'UTC' }
+}
+```
+
+The `thinking` block explains what has happened under the hood and the last content block instructs to run our tool with an input.
+
+At this point in time is where the "agent" aspect of it kicks in.
+We've got something back from the LLM that requires us to take an action (in this case getting the current date and time) and send it back to the LLM.
+This is where the "loop" comes in: our program needs to communicate multiple times to the LLM until a final answer (`end_turn`) is achieved.
+
+Let's do the following: create a function that returns what we mean by `now`.
+
+```typescript
+type NowInputType = z.infer<typeof NowInputSchema>;
+
+function now(input: NowInputType) {
+  const timezone = input.timezone
+
+  const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      weekday: "long",
+      hour12: false,
+    }).formatToParts(new Date());
+
+  return parts
+}
+```
+
+Our loop should then look like this:
+
+```typescript
+console.log("Stop reason:", response.stop_reason);
+console.log("\n");
+for (const block of response.content) {
+  console.log("Content block:", block);
+
+  if (block.type === "tool_use") {
+    console.log("Calling tool:", block.name)
+
+    const toolInput = block.input;
+    const toolResult = now(NowInputSchema.parse(toolInput));
+
+    console.log("Tool result:", toolResult);
+  }
+}
+console.log("\n");
+console.log("Token usage:", response.usage);
+```
+
+In order to forward the reply from the tool to the model, we need to call it again with all its messages' history (this is another term we see often).
+Refactoring things a bit, we end up in the following:
+
+```typescript
+function callModel(
+```
