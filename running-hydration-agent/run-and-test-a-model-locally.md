@@ -560,5 +560,111 @@ In order to forward the reply from the tool to the model, we need to call it aga
 Refactoring things a bit, we end up in the following:
 
 ```typescript
-function callModel(
+async function callModel(history: MessageParam[]): Promise<MessageParam[]> {
+  console.log("Calling model with messages:", JSON.stringify(history));
+
+  // We use this variable to track all new messages
+  const messages: MessageParam[] = [];
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 10000,
+    tools: [nowTool],
+    messages: history,
+  });
+
+  // Here we store all messages from the system (in this case: `thinking` and `tool_use`)
+  messages.push({ role: "assistant", content: response.content });
+  
+  console.log("Stop reason:", response.stop_reason);
+  console.log("\n");
+  for (const block of response.content) {
+    console.log("Content block:", block);
+
+
+    if (block.type === "tool_use") {
+      console.log("Calling tool:", block.name)
+
+      const toolInput = block.input;
+      const toolResult = now(NowInputSchema.parse(toolInput));
+      const toolContent = JSON.stringify(toolResult);
+      const toolUseContent: ToolResultBlockParam = { tool_use_id: block.id, type: 'tool_result', content: toolContent };
+
+      // Here we store the result from the tool call, to be forwarded, later, in the next model call
+      messages.push({ role: "user", content: [toolUseContent] });
+
+      console.log("Tool result:", toolResult);
+    }
+  }
+  console.log("\n");
+  console.log("Token usage:", response.usage);
+
+  return messages;
+}
 ```
+
+Given we now have stored all messages, including the tool result, we need to call the model again with all this history, which will give us the final answer:
+
+```typescript
+const inputMessage = { role: "user", content: `What day is today?`} as MessageParam;
+const history = [inputMessage];
+
+const messages = await callModel(history);
+history.push(...messages);
+await callModel(history);
+```
+
+We get the following output (it is repetitive, as of now, but good to understand what happens at each step of this process):
+
+```bash
+# This is the first call, similar to what we've done previously
+
+Calling model with messages: [{"role":"user","content":"What day is today?"}]
+Stop reason: tool_use
+
+
+Content block: {
+  type: 'thinking',
+  thinking: `The user is asking what day of the week it is today. I need to use the "now" function to get the current date and time, but it requires a timezone parameter. Since the user hasn't specified a timezone, I'll use the default timezone (UTC). Let me call the function first to get the current date.`
+}
+Content block: {
+  type: 'tool_use',
+  id: 'call_vtlndwrz',
+  name: 'now',
+  input: { timezone: 'UTC' }
+}
+Calling tool: now
+Tool result: [
+  { type: 'weekday', value: 'Monday' },
+  { type: 'literal', value: ', ' },
+  { type: 'day', value: '02' },
+  { type: 'literal', value: '/' },
+  { type: 'month', value: '11' },
+  { type: 'literal', value: '/' },
+  { type: 'year', value: '2026' },
+  { type: 'literal', value: ', ' },
+  { type: 'hour', value: '21' },
+  { type: 'literal', value: ':' },
+  { type: 'minute', value: '00' }
+]
+
+
+Token usage: { input_tokens: 315, cache_read_input_tokens: 0, output_tokens: 96 }
+
+# This is the second call, it includes everything we got back from the first call which means, in this case, we have information about which day is today
+
+Calling model with messages: [{"role":"user","content":"What day is today?"},{"role":"assistant","content":[{"type":"thinking","thinking":"The user is asking what day of the week itis today. I need to use the \"now\" function to get the current date and time, but it requires a timezone parameter. Since the user hasn't specified a timezone, I'll use the defaulttimezone (UTC). Let me call the function first to get the current date."},{"type":"tool_use","id":"call_vtlndwrz","name":"now","input":{"timezone":"UTC"}}]},{"role":"user","content":[{"tool_use_id":"call_vtlndwrz","type":"tool_result","content":"[{\"type\":\"weekday\",\"value\":\"Monday\"},{\"type\":\"literal\",\"value\":\", \"},{\"type\":\"day\",\"value\":\"02\"},{\"type\":\"literal\",\"value\":\"/\"},{\"type\":\"month\",\"value\":\"11\"},{\"type\":\"literal\",\"value\":\"/\"},{\"type\":\"year\",\"value\":\"2026\"},{\"type\":\"literal\",\"value\":\", \"},{\"type\":\"hour\",\"value\":\"21\"},{\"type\":\"literal\",\"value\":\":\"},{\"type\":\"minute\",\"value\":\"00\"}]"}]}]
+Stop reason: end_turn
+
+
+Content block: {
+  type: 'thinking',
+  thinking: "The result shows that today is Monday, November 2nd, 2026. The user asked what day it is today, so I should tell them it's Monday."
+}
+Content block: { type: 'text', text: 'Today is **Monday**, November 2nd, 2026.' }
+
+
+Token usage: { input_tokens: 114, cache_read_input_tokens: 410, output_tokens: 57 }
+```
+
+This concludes the first part of "(manually) building an agent"!
+Stay tuned for the next part!
