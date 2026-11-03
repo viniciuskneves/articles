@@ -1,33 +1,33 @@
-This is the first part of a serie where I explore how to build an agent by hand, going through concepts and experimentation.
-
-The goal is to get a running hydration agent, which helps you with your hydration strategy for a run.
-
 # Run and test a model locally
 
-Before I even start talking about agents and all the "it is just a loop", we should look into the basics first.
+This is the first part of a series where I explore how to build an agent by hand, going through concepts and experimentation.
 
-Instead of connecting to Anthropic/OpenAI/..., running a less powerful model locally helps us to understand a few concepts that are important on the long run.
+Before I even start talking about agents and all the "it is just a loop" talk, we should look into the basics first.
+
+Instead of connecting to Anthropic/OpenAI/..., running a less powerful model locally helps us to understand a few concepts that are important in the long run.
 
 ## Install dependencies
 
-We need to install + run the model locally before proceeding.
+We need to install and run the model locally before proceeding.
 
 ### Installing Ollama
 
 We will be using Ollama to run the model locally.
-I recommend following their install guide on https://ollama.com/download or `brew install ollama` if you're a Mac user with Homebrew.
+I recommend following their install guide at https://ollama.com/download or `brew install ollama` if you're a Mac user with Homebrew.
 
-After that you can start Ollama through `ollama serve`.
+After that you can start Ollama with `ollama serve`.
 
 Now we need to pull the model we want to use. You can find a long list at https://ollama.com/search.
 I picked `qwen3.5:4b`: https://ollama.com/library/qwen3.5
-It is not too small and not too big, enough for us to play with.
+It is neither too small nor too big: enough for us to play with.
+
+Pull it with:
 
 ```bash
 ollama pull qwen3.5:4b
 ```
 
-You can test it through (assuming the port `11434` is correct): 
+You can test it with (assuming the port `11434` is correct): 
 ```bash
 curl -s http://localhost:11434/v1/messages -H "content-type: application/json" -d '{
   "model":"qwen3.5:4b","max_tokens":1000,"thinking":{"type":"disabled"},
@@ -40,11 +40,11 @@ This should return something like:
 ```
 
 We can already see things that are interesting in the request above: `max_tokens` and `thinking`.
-We will explore them later, let's first make sure we write some code that uses our model.
+We will explore them later; first, let's make sure we write some code that uses our model.
 
 ## Prompting the model through code
 
-We will be using Anthropic SDK in our examples given it works well with local models and don't much of an abstraction from what the `curl` above was doing.
+We'll use the Anthropic SDK, since it works with Ollama and doesn't add much abstraction over the curl call.
 
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
@@ -76,7 +76,7 @@ console.log("\n");
 console.log("Token usage:", response.usage);
 ```
 
-Running this script through Node/Deno/Bun you should get back something like:
+Running this script with Node/Deno/Bun you should get something like:
 ```text
 Stop reason: end_turn
 
@@ -92,7 +92,7 @@ Token usage: { input_tokens: 17, cache_read_input_tokens: 0, output_tokens: 34 }
 
 ## max_tokens
 
-As the name suggests, this limits the maximum amount of tokens the model **generates**. It doesn't matter the input tokens, it matters the output tokens.
+As the name suggests, this limits the maximum number of tokens the model **generates**. It only counts output tokens, not input tokens.
 
 The impact here is that if this number is low, the model might not generate your desired output.
 Using 18 as `max_tokens` in the previous example, we get something like:
@@ -109,16 +109,15 @@ Content block: {
 Token usage: { input_tokens: 17, cache_read_input_tokens: 0, output_tokens: 18 }
 ```
 
-If the number is too big, it might consume a lot of tokens ($): the understanding here is that `max_tokens` limits how many tokens can be generated so it acts as a safe net for long answers.
-Example: if you generate 100 tokens, it doesn't matter if `max_tokens` is 200 or 1000, as the cost comes from the amount of generated tokens.
-`max_tokens` also include `thinking tokens` which we will explore further down.
+A high `max_tokens` doesn't cost anything by itself ($): it is a cap, not a target. If the model generates 100 tokens, the cost is the same whether `max_tokens` is 200 or 1000. Think of it as a safety net against runaway answers (which will cost more).
+`max_tokens` also include thinking tokens which we will explore further down.
 
 It is all about finding the right size through testing and validation.
 Given we're running a local model and are not paying for the tokens, we can keep a large number in order to keep iterating and testing.
 
 ## cache_*_tokens
 
-As the name suggests, those are tokens coming from cache, which also means $.
+As the name suggests, these are tokens coming from cache, which also means $ (though cheaper).
 They also impact speed: the time it takes for you to get the response back from the LLM.
 
 From [Anthropic's pricing docs](https://platform.claude.com/docs/en/about-claude/pricing):
@@ -126,7 +125,7 @@ From [Anthropic's pricing docs](https://platform.claude.com/docs/en/about-claude
 
 ## Thinking... 🤔
 
-Let's allow thinking and check what changes in our example. If we just comment the thinking configuration and run again (this varies from model to model, Qwen defaults to `on`):
+Let's allow thinking and check what changes in our example. If we just comment out the thinking configuration and run again (this varies from model to model; Qwen defaults to on):
 ```text
 Stop reason: end_turn
 
@@ -144,7 +143,7 @@ Token usage: { input_tokens: 4, cache_read_input_tokens: 11, output_tokens: 76 }
 ```
 
 On top of our response, we also get a "thinking" block back, which is the model's reasoning.
-Bear in mind that "thinking" is also consuming output tokens ($) so we need to think (ha!) when to use it.
+Bear in mind that "thinking" also consumes output tokens ($) so we need to think (ha!) when to use it.
 
 Let's check some more interesting examples with/without thinking before we can reason about it.
 Given the following prompt:
@@ -155,13 +154,13 @@ How many minutes does the whole session take? Reply with only the number, no uni
 ```
 
 How would you answer it?
-I would start with getting a notepad and start the math:
+I would grab a notepad and do the math:
 - Running distance = 3 * 2.5km + 4 * 1.75km = 7.5km + 7km = 14.5km
 - Running minutes = 14.5km * 5:30min/km = 14.5km * 5.5min/km = 79.75min
 - Walking minutes = 0.6km * 12min/km = 7.2min
 - Total = 79.75min + 7.2min = 86.95min
 
-How would a LLM with thinking enabled answer it?
+How would an LLM with thinking enabled answer it?
 ```text
 Stop reason: end_turn
 
@@ -354,17 +353,16 @@ Token usage: { input_tokens: 6, cache_read_input_tokens: 84, output_tokens: 3 }
 ```
 
 Ehhh, that is wild 😅
-Running it multiple times will result in different results...
+Running it multiple times gives different answers...
 So, what is going on here?
 
-In short: with no thinking, the LLM tries the "most likely the answer" based on probability.
-This is where `temperature` concept comes in.
+In short: with no thinking, the LLM outputs the "most likely answer" based on probability.
+This is where the concept of `temperature` comes in.
 
-Temperature influences the probability of a certain token being used in the response, you can read more about it here: https://academy.claude.com/courses/building-with-the-claude-api/temperature
-The temperature won't give us the right answer, it will only influence how the answers change between runs.
-A temperature of `0` will always return the same answer which might still be incorrect.
+Temperature influences the probability of a certain token being used in the response. You can read more about it here: https://academy.claude.com/courses/building-with-the-claude-api/temperature
+Temperature won't give us the right answer; it only affects how the answers change between runs.
 
-Continuing to our example, we can still get the right answer with thinking disabled, we just need to instruct the LLM to "think" in its answer.
+Continuing with our example, we can still get the right answer with thinking disabled; we just need to instruct the LLM to "think" in its answer.
 
 If we update the prompt with `Show your calculation step by step, then give the final number.` instead of `Reply with only the number, no units, no explanation.`, the answer turns into:
 
@@ -435,16 +433,16 @@ Content block: {
 Token usage: { input_tokens: 91, cache_read_input_tokens: 0, output_tokens: 795 }
 ```
 
-The answer is correct in this case! The reason is that we gave the LLM a blank sheet to think and take notes.
-The way LLMs work is: given the input, let's produce the next output token. Given the input + the output token, let's produce the next output token... This repeats and so the "blank sheet" turns into its own thinking step, similar to how we would solve it ourselves.
+The answer is correct in this case! The reason is that we gave the LLM a blank sheet to think and take notes (this is known as chain-of-thought prompting).
+The way LLMs work is: given the input, let's produce the next output token. Given the input + the output token, let's produce the next output token... This repeats, so the "blank sheet" becomes its own thinking step, similar to how we would solve it ourselves.
 
-This doesn't mean we shouldn't use the `thinking` step, it is just to illustrate what is happening under the hood. Using the `thinking` step has its own benefits.
+This doesn't mean we shouldn't use the `thinking` step, it is just to illustrate what is happening under the hood. Using the `thinking` step has its own benefits (like answering just with numbers as we prompted, instead of having the final answer buried in the text).
 
 ## Tools
 
-Tools give LLMs access to the "world", besides their training data.
+Tools give LLMs access to the "world", beyond their training data.
 
-If we prompt the following: `What day is today?`, we get an unexpected answer (hallucination).
+If we prompt the following: `What day is it today?`, we get an unexpected answer (hallucination).
 
 ```text
 Stop reason: end_turn
@@ -484,7 +482,7 @@ const NowInputSchema = z.object({
     .default("UTC")
     .describe("IANA timezone such as Europe/Amsterdam. Defaults to UTC."),
 });
-const NowInputJSONSchema = z.toJSONSchema(NowInputSchema);
+const NowInputJSONSchema = z.toJSONSchema(NowInputSchema, { io: 'input' });
 const nowTool: Tool = {
   name: "now",
   description: "Current date and time. Call this before resolving words like today, tomorrow or Saturday.",
@@ -496,7 +494,7 @@ const response = await client.messages.create({
   max_tokens: 10000,
   tools: [nowTool],
   messages: [
-    { role: "user", content: `What day is today?`},
+    { role: "user", content: `What day is it today?`},
   ],
 });
 ```
@@ -550,7 +548,7 @@ function now(input: NowInputType) {
 }
 ```
 
-Our loop should then look like this:
+Our "loop" should then look like this:
 
 ```typescript
 console.log("Stop reason:", response.stop_reason);
@@ -572,6 +570,7 @@ console.log("Token usage:", response.usage);
 ```
 
 In order to forward the reply from the tool to the model, we need to call it again with all its messages' history (this is another term we see often).
+The history is important because the model is stateless so we need to store the history for later usage/prompting.
 Refactoring things a bit, we end up in the following:
 
 ```typescript
@@ -620,7 +619,7 @@ async function callModel(history: MessageParam[]): Promise<MessageParam[]> {
 Given we now have stored all messages, including the tool result, we need to call the model again with all this history, which will give us the final answer:
 
 ```typescript
-const inputMessage = { role: "user", content: `What day is today?`} as MessageParam;
+const inputMessage = { role: "user", content: `What day is it today?`} as MessageParam;
 const history = [inputMessage];
 
 const messages = await callModel(history);
@@ -633,7 +632,7 @@ We get the following output (it is repetitive, as of now, but good to understand
 ```text
 # This is the first call, similar to what we've done previously
 
-Calling model with messages: [{"role":"user","content":"What day is today?"}]
+Calling model with messages: [{"role":"user","content":"What day is it today?"}]
 Stop reason: tool_use
 
 
