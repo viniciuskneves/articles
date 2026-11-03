@@ -1,3 +1,7 @@
+This is the first part of a serie where I explore how to build an agent by hand, going through concepts and experimentation.
+
+The goal is to get a running hydration agent, which helps you with your hydration strategy for a run.
+
 # Run and test a model locally
 
 Before I even start talking about agents and all the "it is just a loop", we should look into the basics first.
@@ -18,6 +22,10 @@ After that you can start Ollama through `ollama serve`.
 Now we need to pull the model we want to use. You can find a long list at https://ollama.com/search.
 I picked `qwen3.5:4b`: https://ollama.com/library/qwen3.5
 It is not too small and not too big, enough for us to play with.
+
+```bash
+ollama pull qwen3.5:4b
+```
 
 You can test it through (assuming the port `11434` is correct): 
 ```bash
@@ -69,7 +77,7 @@ console.log("Token usage:", response.usage);
 ```
 
 Running this script through Node/Deno/Bun you should get back something like:
-```bash
+```text
 Stop reason: end_turn
 
 
@@ -88,7 +96,7 @@ As the name suggests, this limits the maximum amount of tokens the model **gener
 
 The impact here is that if this number is low, the model might not generate your desired output.
 Using 18 as `max_tokens` in the previous example, we get something like:
-```bash
+```text
 Stop reason: max_tokens # Different stop reason
 
 
@@ -101,7 +109,9 @@ Content block: {
 Token usage: { input_tokens: 17, cache_read_input_tokens: 0, output_tokens: 18 }
 ```
 
-If the number is too big, it might consume a lot of tokens ($).
+If the number is too big, it might consume a lot of tokens ($): the understanding here is that `max_tokens` limits how many tokens can be generated so it acts as a safe net for long answers.
+Example: if you generate 100 tokens, it doesn't matter if `max_tokens` is 200 or 1000, as the cost comes from the amount of generated tokens.
+`max_tokens` also include `thinking tokens` which we will explore further down.
 
 It is all about finding the right size through testing and validation.
 Given we're running a local model and are not paying for the tokens, we can keep a large number in order to keep iterating and testing.
@@ -116,8 +126,8 @@ From [Anthropic's pricing docs](https://platform.claude.com/docs/en/about-claude
 
 ## Thinking... 🤔
 
-Let's allow thinking and check what changes in our example. If we just comment the thinking configuration and run again:
-```bash
+Let's allow thinking and check what changes in our example. If we just comment the thinking configuration and run again (this varies from model to model, Qwen defaults to `on`):
+```text
 Stop reason: end_turn
 
 
@@ -133,7 +143,7 @@ Content block: { type: 'text', text: 'My name is Qwen3.5.' }
 Token usage: { input_tokens: 4, cache_read_input_tokens: 11, output_tokens: 76 }
 ```
 
-On top of our response, we also get a "thinking" block back, which is how the prompt was interpreted by the LLM (what is was thinking).
+On top of our response, we also get a "thinking" block back, which is the model's reasoning.
 Bear in mind that "thinking" is also consuming output tokens ($) so we need to think (ha!) when to use it.
 
 Let's check some more interesting examples with/without thinking before we can reason about it.
@@ -148,11 +158,11 @@ How would you answer it?
 I would start with getting a notepad and start the math:
 - Running distance = 3 * 2.5km + 4 * 1.75km = 7.5km + 7km = 14.5km
 - Running minutes = 14.5km * 5:30min/km = 14.5km * 5.5min/km = 79.75min
-- Walking minutes = 600m * 12min/km = 7.2min
+- Walking minutes = 0.6km * 12min/km = 7.2min
 - Total = 79.75min + 7.2min = 86.95min
 
 How would a LLM with thinking enabled answer it?
-```bash
+```text
 Stop reason: end_turn
 
 
@@ -333,7 +343,7 @@ Token usage: { input_tokens: 88, cache_read_input_tokens: 0, output_tokens: 3641
 ```
 
 Now let's run it with thinking disabled:
-```bash
+```text
 Stop reason: end_turn
 
 
@@ -351,12 +361,14 @@ In short: with no thinking, the LLM tries the "most likely the answer" based on 
 This is where `temperature` concept comes in.
 
 Temperature influences the probability of a certain token being used in the response, you can read more about it here: https://academy.claude.com/courses/building-with-the-claude-api/temperature
+The temperature won't give us the right answer, it will only influence how the answers change between runs.
+A temperature of `0` will always return the same answer which might still be incorrect.
 
 Continuing to our example, we can still get the right answer with thinking disabled, we just need to instruct the LLM to "think" in its answer.
 
 If we update the prompt with `Show your calculation step by step, then give the final number.` instead of `Reply with only the number, no units, no explanation.`, the answer turns into:
 
-```bash
+```text
 Stop reason: end_turn
 
 
@@ -432,9 +444,9 @@ This doesn't mean we shouldn't use the `thinking` step, it is just to illustrate
 
 Tools give LLMs access to the "world", besides their training data.
 
-If we prompt the following: `What day is today?`, we get an unexpected answer.
+If we prompt the following: `What day is today?`, we get an unexpected answer (hallucination).
 
-```bash
+```text
 Stop reason: end_turn
 
 
@@ -463,6 +475,9 @@ Our tool will return what date and time it is right now, given a provided timezo
 I'm `zod` here as a library to define the Input Schema as it becomes a reliable way to parse the input later in code.
 
 ```typescript
+import { z } from "zod"
+import { MessageParam, Tool, ToolResultBlockParam } from "@anthropic-ai/sdk/resources"
+
 const NowInputSchema = z.object({
   timezone: z
     .string()
@@ -472,7 +487,7 @@ const NowInputSchema = z.object({
 const NowInputJSONSchema = z.toJSONSchema(NowInputSchema);
 const nowTool: Tool = {
   name: "now",
-  description: "Current date and time. Pass the timezone from geocode to get the local date at the run location. Call this before resolving words like today, tomorrow or Saturday.",
+  description: "Current date and time. Call this before resolving words like today, tomorrow or Saturday.",
   input_schema: NowInputJSONSchema as Tool["input_schema"],
 }
 
@@ -488,7 +503,7 @@ const response = await client.messages.create({
 
 We get the following output now:
 
-```bash
+```text
 Stop reason: tool_use
 
 
@@ -572,7 +587,7 @@ async function callModel(history: MessageParam[]): Promise<MessageParam[]> {
     messages: history,
   });
 
-  // Here we store all messages from the system (in this case: `thinking` and `tool_use`)
+  // Here we store all messages from the assistant (in this case: `thinking` and `tool_use`)
   messages.push({ role: "assistant", content: response.content });
   
   console.log("Stop reason:", response.stop_reason);
@@ -615,7 +630,7 @@ await callModel(history);
 
 We get the following output (it is repetitive, as of now, but good to understand what happens at each step of this process):
 
-```bash
+```text
 # This is the first call, similar to what we've done previously
 
 Calling model with messages: [{"role":"user","content":"What day is today?"}]
@@ -662,7 +677,7 @@ Content block: {
 }
 Content block: { type: 'text', text: 'Today is **Monday**, November 2nd, 2026.' }
 
-
+# Given most of the input is the same from the first run, the cache is heavily used
 Token usage: { input_tokens: 114, cache_read_input_tokens: 410, output_tokens: 57 }
 ```
 
